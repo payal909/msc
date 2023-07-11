@@ -114,7 +114,7 @@ def analyze():
                 session.transcript.append(["assistant",qs])
                 qs_ans = get_answer(qs)
                 session.transcript.append(["user",qs_ans])
-                if qs_ans.starts_with("No"):
+                if qs_ans.startswith("No"):
                     break
 
 analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
