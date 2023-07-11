@@ -25,97 +25,84 @@ import streamlit as st
 # from langchain.document_loaders import UnstructuredPDFLoader
 # _ = load_dotenv(find_dotenv())
 
-bank_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
-
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.1)
 embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
 
-bank_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
+institute_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
 
-bank_name = st.selectbox(label="Institute",options=bank_names)
+institute = st.selectbox(label="Institute",options=institute_names)
 analyse_button = st.button("Analyse",use_container_width=True)
 
-bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=bank_names[bank_name])
+bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
 
 template = """
 You are virtual assistant of OSFI.
-Use the following  context (delimited by <ctx></ctx>), and the chat history (delimited by <hs></hs>) to answer the question:
+Use the following  context (delimited by <ctx></ctx>) to answer the question:
 ------
 <ctx>
 {context}
 </ctx>
 ------
-<hs>
-{history}
-</hs>
-------
 {question}
 Answer:
 """
-prompt = PromptTemplate(input_variables=["history", "context", "question"],template=template)
 
-agent = RetrievalQA.from_chain_type(llm = llm,
-    chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
-    retriever=bank_db.as_retriever(),
-    verbose=False,
-    chain_type_kwargs={
-    "verbose":True,
-    "prompt": prompt,
-    "memory": ConversationBufferMemory(
-        input_key="question"),
-})
+prompt = PromptTemplate(input_variables=["context", "question"],template=template)
 
-# bcar_retriever = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name='Basel Capital Adequacy Reporting (BCAR) 2023 (2)_index')
-# bmo_retriver = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name='bmo_ar2022 (2)_index')
-# creditirb_retriever = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name='Capital Adequacy Requirements (CAR) Chapter 5 Credit Risk Internal Ratings Based Approach_index')
-# creditstd_retriever = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name='Capital Adequacy Requirements (CAR) Chapter 4  Credit Risk Standardized Approach_index')
-# nbc_retriever = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name='NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index')
-# smsb_retriever = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name='SMSB (1)_index')
+def get_answer(question):
+    agent = RetrievalQA.from_chain_type(llm = llm,
+        chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
+        retriever=bank_db.as_retriever(),
+        verbose=False,
+        chain_type_kwargs={
+        "verbose":True,
+        "prompt": prompt,
+        "memory": ConversationBufferMemory(
+            input_key="question"),
+    })
+    return agent.run(question)
 
-# indices = [bcar_retriever,bmo_retriver,creditirb_retriever,creditstd_retriever,nbc_retriever,smsb_retriever]
+session = st.session_state
+if 'transcript' not in session:
+    session.transcript = []
 
-# for index in indices[1:]:
-#     indices[0].merge_from(index)
-
-
-
-# agent = RetrievalQA.from_chain_type(llm = llm,
-#     chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
-#     retriever=bcar_retriever.as_retriever(),
-#     verbose=False,
-#     chain_type_kwargs={
-#     "verbose":True,
-#     "prompt": prompt,
-#     "memory": ConversationBufferMemory(
-#         memory_key="history",
-#         input_key="question"),
-# })
-
-
-# st.title("BMO Chatbot")
-
-if 'transcript' not in st.session_state:
-    st.session_state['transcript'] = []
-
-if 'input_disabled' not in st.session_state:
-    st.session_state['input_disabled'] = True
-
+if 'input_disabled' not in session:
+    session.input_disabled = True
 
 messages = st.container()
-user_input = st.chat_input("Query",disabled=st.session_state['input_disabled'])
+user_input = st.chat_input("Query",disabled=session['input_disabled'])
 
-st.chat_message("user",avatar="💻").write("System Message")
+q1 = f"Does {institute} has a parent company?"
+q1y_list = [
+    f"Is {institute}'s parent an operating company regulated by OSFI?",
+    f"Has {institute}'s parent adopted an internal rating (IRB) approach to credit risk?",
+    f"Is {institute} a fully- consolidated subsidiary?",
+    f"Does {institute} have at least 95% of its credit risk exposures captured under the IRB approach?"
+    ]
+q1n_list = [
+    f"Has {institute} adopted an internal rating (IRB) approach to credit risk?",
+    f"Is {institute} a fully- consolidated subsidiary?",
+    f"Does {institute} have at least 95% of its credit risk exposures captured under the IRB approach?"
+    ]
+q2 = f"Is {institute} reporting less than $10 billion in total assets?"
+q2y_list = [
+    f"Is {institute} reporting greater than $100 million in total loans?",
+    f"Does {institute} have an interest rate or foreign exchange derivatives with a combined notional amount greater than 100% of total capital?",
+    f"Does {institute} have any other types of derivative exposure?",
+    f"Does {institute} have exposure to other off-balance sheet items greater than 100% of total capital?"
+    ]
 
+session.transcript.append(st.chat_message("assistant").write(q1))
 
 # if user_input:
 #     output = agent.run(user_input)
 #     # with relevent_docs:
 #     #     st.write("\n\n\n",bcar_retriever.as_retriever().get_relevant_documents(user_input),"\n\n\n")
-#     st.session_state.past.append(user_input)
-#     st.session_state.generated.append(output)
-# if 'generated' in st.session_state:
+#     session.past.append(user_input)
+#     session.generated.append(output)
+# if 'generated' in session:
 #     with messages:
-#         for i in range(len(st.session_state['generated'])):
-#             st.chat_message("user").write(st.session_state['past'][i])
-#             st.chat_message("assistant").write(st.session_state["generated"][i])
+#         for i in range(len(session['generated'])):
+#             st.chat_message("user").write(session['past'][i])
+#             st.chat_message("assistant").write(session["generated"][i])
