@@ -30,7 +30,7 @@ llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.1)
 embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
 
 template = """
-You are a helpful virtual assistant of OSFI. Analyze the context and answer the question in either "yes" or "no" only. Remember the
+You are a helpful virtual assistant of OSFI. Analyze the context and answer the question in "Yes" or "No" only. Remember the
 answer should be only "Yes" or "No". If you don't know the answer, just answer "No".
 Use the following context (delimited by <ctx></ctx>) to answer the question:
 
