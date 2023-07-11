@@ -101,6 +101,7 @@ def analyze():
     session.transcript.append(["assistant",q1])
     q1_ans = get_answer(q1)
     session.transcript.append(["user",q1_ans])
+    st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
     st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
     institute_type = "Short Form"
     possibly_cat3 = False
@@ -109,6 +110,7 @@ def analyze():
             session.transcript.append(["assistant",qs])
             qs_ans = get_answer(qs)
             session.transcript.append(["user",qs_ans])
+            st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
             st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
             if qs_ans.startswith("No"):
                 possibly_cat3 = True
@@ -118,6 +120,7 @@ def analyze():
             session.transcript.append(["assistant",qs])
             qs_ans = get_answer(qs)
             session.transcript.append(["user",qs_ans])
+            st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
             st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
             if qs_ans.startswith("No"):
                 possibly_cat3 = True
@@ -127,12 +130,14 @@ def analyze():
         session.transcript.append(["assistant",q2])
         q2_ans = get_answer(q2)
         session.transcript.append(["user",q2_ans])
+        st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
         st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
         if q2_ans.startswith("Yes"):
             for qs in q2y_list:
                 session.transcript.append(["assistant",qs])
                 qs_ans = get_answer(qs)
                 session.transcript.append(["user",qs_ans])
+                st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
                 st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
                 if qs_ans.startswith("Yes"):
                     institute_type = "Full Form"
