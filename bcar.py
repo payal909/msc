@@ -36,7 +36,7 @@ bank_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 
 
 l,r = st.columns([2,1])
 with l:
-    bank_name = st.selectbox(label=None,options=bank_names)
+    bank_name = st.selectbox(label="Institute",options=bank_names)
 with r:
     analyse_button = st.button("Analyse",use_container_width=True)
 # template = """
