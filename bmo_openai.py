@@ -77,10 +77,10 @@ agent = RetrievalQA.from_chain_type(llm = llm,
 # st.title("BMO Chatbot")
 
 # if 'something' not in st.session_state:
-#     st.session_state.something = ''
+#     user_input = ''
 
 # def submit():
-#     st.session_state.something = st.session_state.widget
+#     user_input = st.session_state.widget
 #     st.session_state.widget = ''
 
 # if 'generated' not in st.session_state:
@@ -91,11 +91,11 @@ agent = RetrievalQA.from_chain_type(llm = llm,
 # messages = st.container()
 # user_input = st.text_input("Query", key="widget", on_change=submit)
 # relevent_docs = st.expander("Relevent Docs", expanded=False)
-# if st.session_state.something:
-#     output = agent.run(st.session_state.something)
+# if user_input:
+#     output = agent.run(user_input)
 #     with relevent_docs:
-#         st.write("\n\n\n",bcar_retriever.as_retriever().get_relevant_documents(st.session_state.something),"\n\n\n")
-#     st.session_state.past.append(st.session_state.something)
+#         st.write("\n\n\n",bcar_retriever.as_retriever().get_relevant_documents(user_input),"\n\n\n")
+#     st.session_state.past.append(user_input)
 #     st.session_state.generated.append(output)
 # if 'generated' in st.session_state:
 #     with messages:
@@ -110,10 +110,10 @@ agent = RetrievalQA.from_chain_type(llm = llm,
 st.title("BMO Chatbot")
 
 # if 'something' not in st.session_state:
-#     st.session_state.something = ''
+#     user_input = ''
 
 # def submit():
-#     st.session_state.something = st.session_state.widget
+#     user_input = st.session_state.widget
 #     st.session_state.widget = ''
 
 if 'generated' not in st.session_state:
@@ -124,11 +124,11 @@ if 'past' not in st.session_state:
 messages = st.container()
 user_input = st.chat_input("Query")
 relevent_docs = st.expander("Relevent Docs", expanded=False)
-if st.session_state.something:
-    output = agent.run(st.session_state.something)
+if user_input:
+    output = agent.run(user_input)
     with relevent_docs:
-        st.write("\n\n\n",bcar_retriever.as_retriever().get_relevant_documents(st.session_state.something),"\n\n\n")
-    st.session_state.past.append(st.session_state.something)
+        st.write("\n\n\n",bcar_retriever.as_retriever().get_relevant_documents(user_input),"\n\n\n")
+    st.session_state.past.append(user_input)
     st.session_state.generated.append(output)
 if 'generated' in st.session_state:
     with messages:
