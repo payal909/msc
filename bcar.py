@@ -98,29 +98,28 @@ q2y_list = [
 
 def analyze():
     session.analyze_disabled = True
-    with st.spinner():
-        session.transcript.append(["assistant",q1])
-        q1_ans = get_answer(q1)
-        session.transcript.append(["user",q1_ans])
-        if q1_ans.startswith("Yes"):
-            for qs in q1y_list:
-                session.transcript.append(["assistant",qs])
-                qs_ans = get_answer(qs)
-                session.transcript.append(["user",qs_ans])
-                if qs_ans.starts_with("No"):
-                    break
-        elif q1_ans.startswith("No"):
-            for qs in q1n_list:
-                session.transcript.append(["assistant",qs])
-                qs_ans = get_answer(qs)
-                session.transcript.append(["user",qs_ans])
-                if qs_ans.startswith("No"):
-                    break
-
-analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
-
+    session.transcript.append(["assistant",q1])
+    q1_ans = get_answer(q1)
+    session.transcript.append(["user",q1_ans])
+    if q1_ans.startswith("Yes"):
+        for qs in q1y_list:
+            session.transcript.append(["assistant",qs])
+            qs_ans = get_answer(qs)
+            session.transcript.append(["user",qs_ans])
+            if qs_ans.starts_with("No"):
+                break
+    elif q1_ans.startswith("No"):
+        for qs in q1n_list:
+            session.transcript.append(["assistant",qs])
+            qs_ans = get_answer(qs)
+            session.transcript.append(["user",qs_ans])
+            if qs_ans.startswith("No"):
+                break
+        
 for message in session.transcript:
     st.chat_message(message[0]).write(message[1])
+
+analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
 
 # if user_input:
 #     output = agent.run(user_input)
