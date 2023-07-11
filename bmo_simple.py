@@ -44,12 +44,12 @@ Answer:
 embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
 
 
-db_bcar = Chroma(embedding_function=embeddings,persist_directory=f"/workspaces/msc/zip_bmo emb/BCAR_Embedding")
-db_bmo = Chroma(embedding_function=embeddings,persist_directory=f"/workspaces/msc/zip_bmo emb/BMO_FULL_EMBEDDING")
-db_credirirb = Chroma(embedding_function=embeddings,persist_directory=f"/workspaces/msc/zip_bmo emb/IRB")
-db_creditstd = Chroma(embedding_function=embeddings,persist_directory=f"/workspaces/msc/zip_bmo emb/credit_risk_standartize")
-db_smsb = Chroma(embedding_function=embeddings,persist_directory=f"/workspaces/msc/zip_bmo emb/SMSB_EMBEDDING")
-db_ncb = Chroma(embedding_function=embeddings,persist_directory=f"/workspaces/msc/zip_bmo emb/NBC_Embedding")
+db_bcar = Chroma(embedding_function=embeddings,persist_directory=f"./zip_bmo emb/BCAR_Embedding")
+db_bmo = Chroma(embedding_function=embeddings,persist_directory=f"./zip_bmo emb/BMO_FULL_EMBEDDING")
+db_credirirb = Chroma(embedding_function=embeddings,persist_directory=f"./zip_bmo emb/IRB")
+db_creditstd = Chroma(embedding_function=embeddings,persist_directory=f"./zip_bmo emb/credit_risk_standartize")
+db_smsb = Chroma(embedding_function=embeddings,persist_directory=f"./zip_bmo emb/SMSB_EMBEDDING")
+db_ncb = Chroma(embedding_function=embeddings,persist_directory=f"./zip_bmo emb/NBC_Embedding")
 
 dbs = [db_bcar ,db_bmo ,db_credirirb ,db_creditstd ,db_smsb ,db_ncb ]
 for db in dbs[1:]:
