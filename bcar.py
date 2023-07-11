@@ -32,6 +32,8 @@ os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.1)
 embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
 
+
+bank_name = st.multiselect(label="Institute",bank_names)
 # template = """
 # You are virtual assistant of OSFI.
 # Use the following  context (delimited by <ctx></ctx>), and the chat history (delimited by <hs></hs>) to answer the question:
