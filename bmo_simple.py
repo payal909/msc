@@ -1,5 +1,5 @@
 import os
-# from langchain.chains import RetrievalQA
+from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
 # from langchain.document_loaders import DirectoryLoader,PyPDFLoader
 # from langchain.document_loaders import UnstructuredExcelLoader
