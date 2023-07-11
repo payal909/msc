@@ -144,7 +144,7 @@ def analyze():
 # for message in session.transcript:
 #     st.chat_message(message[0]).write(message[1])
 
-analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled)
+analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
 
 # if user_input:
 #     output = agent.run(user_input)
