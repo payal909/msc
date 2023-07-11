@@ -26,7 +26,7 @@ from streamlit_chat import message
 # from langchain.document_loaders import UnstructuredPDFLoader
 # _ = load_dotenv(find_dotenv())
 
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "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"
 llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.1)
 
 
