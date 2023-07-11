@@ -133,5 +133,5 @@ if user_input:
 if 'generated' in st.session_state:
     with messages:
         for i in range(len(st.session_state['generated'])):
-            st.chat_message("user",avatar="name").write(st.session_state['past'][i])
-            st.chat_message("assutant",avatar="name").write(st.session_state["generated"][i])
+            st.chat_message("user").write(st.session_state['past'][i])
+            st.chat_message("assistant").write(st.session_state["generated"][i])
