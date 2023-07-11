@@ -105,7 +105,7 @@ if 'input_disabled' not in st.session_state:
 messages = st.container()
 user_input = st.chat_input("Query",disabled=st.session_state['input_disabled'])
 
-st.chat_message("user",avatar=":computer:").write("System Message")
+st.chat_message("user",avatar="💻").write("System Message")
 
 
 # if user_input:
