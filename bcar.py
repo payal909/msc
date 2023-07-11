@@ -29,13 +29,6 @@ os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.1)
 embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
 
-institute_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
-
-institute = st.selectbox(label="Institute",options=institute_names)
-analyze_button = st.button("Analyze",use_container_width=True)
-
-bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
-
 template = """
 You are a helpful virtual assistant of OSFI. Analyze the context and answer the question in either "yes" or "no" only. Remember the
 answer should be only "Yes" or "No". If you don't know the answer, just answer "No".
@@ -72,8 +65,16 @@ if 'transcript' not in session:
 if 'input_disabled' not in session:
     session.input_disabled = True
 
-messages = st.container()
-user_input = st.chat_input("Query",disabled=session['input_disabled'])
+if 'analyze_disabled' not in session:
+    session.analyze_disabled = False
+
+institute_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
+
+institute = st.selectbox(label="Institute",options=institute_names)
+bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
+
+# messages = st.container()
+# user_input = st.chat_input("Query",disabled=session['input_disabled'])
 
 q1 = f"Does {institute} have a parent company?"
 q1y_list = [
@@ -95,24 +96,28 @@ q2y_list = [
     f"Does {institute} have exposure to other off-balance sheet items greater than 100% of total capital?"
     ]
 
-with st.spinner():
-    session.transcript.append(["assistant",q1])
-    q1_ans = get_answer(q1)
-    session.transcript.append(["user",q1_ans])
-    if q1_ans.starts_with("Yes"):
-        for qs in q1y_list:
-            session.transcript.append(["assistant",qs])
-            qs_ans = get_answer(qs)
-            session.transcript.append(["user",qs_ans])
-            if qs_ans.starts_with("No"):
-                break
-    elif q1_ans.starts_with("No"):
-        for qs in q1n_list:
-            session.transcript.append(["assistant",qs])
-            qs_ans = get_answer(qs)
-            session.transcript.append(["user",qs_ans])
-            if qs_ans.starts_with("No"):
-                break
+def analyze():
+    session.analyze_disabled = True
+    with st.spinner():
+        session.transcript.append(["assistant",q1])
+        q1_ans = get_answer(q1)
+        session.transcript.append(["user",q1_ans])
+        if q1_ans.starts_with("Yes"):
+            for qs in q1y_list:
+                session.transcript.append(["assistant",qs])
+                qs_ans = get_answer(qs)
+                session.transcript.append(["user",qs_ans])
+                if qs_ans.starts_with("No"):
+                    break
+        elif q1_ans.starts_with("No"):
+            for qs in q1n_list:
+                session.transcript.append(["assistant",qs])
+                qs_ans = get_answer(qs)
+                session.transcript.append(["user",qs_ans])
+                if qs_ans.starts_with("No"):
+                    break
+
+analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
 
 for message in session.transcript:
     st.chat_message(message[0]).write(message[1])
