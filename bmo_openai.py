@@ -74,6 +74,39 @@ agent = RetrievalQA.from_chain_type(llm = llm,
         input_key="question"),
 })
 
+# st.title("BMO Chatbot")
+
+# if 'something' not in st.session_state:
+#     st.session_state.something = ''
+
+# def submit():
+#     st.session_state.something = st.session_state.widget
+#     st.session_state.widget = ''
+
+# if 'generated' not in st.session_state:
+#     st.session_state['generated'] = []
+# ## past stores User's questions
+# if 'past' not in st.session_state:
+#     st.session_state['past'] = []
+# messages = st.container()
+# user_input = st.text_input("Query", key="widget", on_change=submit)
+# relevent_docs = st.expander("Relevent Docs", expanded=False)
+# if st.session_state.something:
+#     output = agent.run(st.session_state.something)
+#     with relevent_docs:
+#         st.write("\n\n\n",bcar_retriever.as_retriever().get_relevant_documents(st.session_state.something),"\n\n\n")
+#     st.session_state.past.append(st.session_state.something)
+#     st.session_state.generated.append(output)
+# if 'generated' in st.session_state:
+#     with messages:
+#         for i in range(len(st.session_state['generated'])):
+#             message(st.session_state['past'][i], is_user=True, key=str(i) + '_user',avatar_style="initials",seed="U")
+#             message(st.session_state["generated"][i], key=str(i),avatar_style="initials",seed="A")
+
+# agent.run("Which reports bank BMO has to send to OSFI for BCAR Credit Risk?")
+
+# print(bcar_retriever.as_retriever().get_relevant_documents("what is fiscal year end of BMO?"))
+
 st.title("BMO Chatbot")
 
 if 'something' not in st.session_state:
@@ -89,7 +122,7 @@ if 'generated' not in st.session_state:
 if 'past' not in st.session_state:
     st.session_state['past'] = []
 messages = st.container()
-user_input = st.text_input("Query", key="widget", on_change=submit)
+user_input = st.chat_input("Query", key="widget", on_change=submit)
 relevent_docs = st.expander("Relevent Docs", expanded=False)
 if st.session_state.something:
     output = agent.run(st.session_state.something)
@@ -100,10 +133,5 @@ if st.session_state.something:
 if 'generated' in st.session_state:
     with messages:
         for i in range(len(st.session_state['generated'])):
-            message(st.session_state['past'][i], is_user=True, key=str(i) + '_user',avatar_style="initials",seed="U")
-            message(st.session_state["generated"][i], key=str(i),avatar_style="initials",seed="A")
-
-# agent.run("Which reports bank BMO has to send to OSFI for BCAR Credit Risk?")
-
-# print(bcar_retriever.as_retriever().get_relevant_documents("what is fiscal year end of BMO?"))
-
+            st.chat_message("user").write(st.session_state['past'][i])
+            st.chat_message("assutant").write(st.session_state["generated"][i])
