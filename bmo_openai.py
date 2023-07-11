@@ -126,8 +126,8 @@ user_input = st.chat_input("Query")
 relevent_docs = st.expander("Relevent Docs", expanded=False)
 if user_input:
     output = agent.run(user_input)
-    with relevent_docs:
-        st.write("\n\n\n",bcar_retriever.as_retriever().get_relevant_documents(user_input),"\n\n\n")
+    # with relevent_docs:
+    #     st.write("\n\n\n",bcar_retriever.as_retriever().get_relevant_documents(user_input),"\n\n\n")
     st.session_state.past.append(user_input)
     st.session_state.generated.append(output)
 if 'generated' in st.session_state:
