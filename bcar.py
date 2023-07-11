@@ -73,7 +73,7 @@ if 'input_disabled' not in session:
 messages = st.container()
 user_input = st.chat_input("Query",disabled=session['input_disabled'])
 
-q1 = f"Does {institute} has a parent company?"
+q1 = f"Does {institute} have a parent company?"
 q1y_list = [
     f"Is {institute}'s parent an operating company regulated by OSFI?",
     f"Has {institute}'s parent adopted an internal rating (IRB) approach to credit risk?",
@@ -93,7 +93,19 @@ q2y_list = [
     f"Does {institute} have exposure to other off-balance sheet items greater than 100% of total capital?"
     ]
 
-session.transcript.append(st.chat_message("assistant").write(q1))
+with st.spinner():
+    session.transcript.append(["assistant",q1])
+    q1_ans = get_answer(q1)
+    session.transcript.append(["user",q1_ans])
+    if q1_ans == "Yes":
+        for qs in q1y_list:
+            session.transcript.append(["assistant",qs])
+            qs_ans = get_answer(qs)
+            session.transcript.append(["user",qs_ans])
+            if qs_ans == "No":
+                break
+    for message in session.transcript:
+        st.chat_message(message[0]).write(message[1])
 
 # if user_input:
 #     output = agent.run(user_input)
