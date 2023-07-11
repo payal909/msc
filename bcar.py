@@ -74,8 +74,6 @@ institute_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 
 institute = st.empty()
 institute.selectbox(label="Institute",options=institute_names)
 
-bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
-
 q1 = f"Does {institute} have a parent company?"
 q1y_list = [
     f"Is {institute}'s parent an operating company regulated by OSFI?",
@@ -97,6 +95,7 @@ q2y_list = [
     ]
 
 analyze_button = st.empty()
+bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
 
 def analyze():
     session.analyze_disabled = True
