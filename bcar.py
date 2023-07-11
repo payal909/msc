@@ -22,7 +22,6 @@ from langchain import PromptTemplate
 # from langchain import OpenAI, VectorDBQA
 # from langchain.chains.router import MultiRetrievalQAChain
 import streamlit as st
-from streamlit_chat import message
 # from langchain.document_loaders import UnstructuredPDFLoader
 # _ = load_dotenv(find_dotenv())
 
