@@ -122,7 +122,7 @@ if 'generated' not in st.session_state:
 if 'past' not in st.session_state:
     st.session_state['past'] = []
 messages = st.container()
-user_input = st.chat_input("Query", key="widget", on_change=submit)
+user_input = st.chat_input("Query", key="widget", on_submit=submit)
 relevent_docs = st.expander("Relevent Docs", expanded=False)
 if st.session_state.something:
     output = agent.run(st.session_state.something)
