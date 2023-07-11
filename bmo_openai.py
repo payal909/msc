@@ -100,4 +100,7 @@ if 'generated' in st.session_state:
             message(st.session_state['past'][i], is_user=True, key=str(i) + '_user',avatar_style="initials",seed="U")
             message(st.session_state["generated"][i], key=str(i),avatar_style="initials",seed="B")
 
-# agent.run("Which reports bank BMO has to send to OSFI for BCAR Credit Risk?")
+agent.run("Which reports bank BMO has to send to OSFI for BCAR Credit Risk?")
+
+# print(bcar_retriever.as_retriever().get_relevant_documents("what is fiscal year end of BMO?"))
+

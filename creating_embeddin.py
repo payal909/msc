@@ -26,11 +26,11 @@ from langchain.vectorstores import Chroma
 
 file_names = os.listdir("./data/")
 
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "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"
 llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.1)
 embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size = 1)
 
-for file in tqdm(file_names[4:5]):
+for file in ["bmo_ar2022 (2).pdf"]:
     print(file.split(".")[0])
     loader = PyPDFLoader(f"./data/{file}")
     documents = loader.load()
