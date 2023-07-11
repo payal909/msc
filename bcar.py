@@ -70,9 +70,9 @@ if 'analyze_disabled' not in session:
 
 institute_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
 
-input_container = st.container()
-with input_container:
-    institute = st.selectbox(label="Institute",options=institute_names)
+
+institute = st.empty()
+institute.selectbox(label="Institute",options=institute_names)
 bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
 
 q1 = f"Does {institute} have a parent company?"
@@ -94,6 +94,8 @@ q2y_list = [
     f"Does {institute} have any other types of derivative exposure?",
     f"Does {institute} have exposure to other off-balance sheet items greater than 100% of total capital?"
     ]
+
+analyze_button = st.empty()
 
 def analyze():
     session.analyze_disabled = True
@@ -145,11 +147,13 @@ def analyze():
             institute_type = "Full Form"
     session.input_disabled = False
 
+    institute.empty()
+    analyze_button.empty()
+
+analyze_button.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
 
 # for message in session.transcript:
 #     st.chat_message(message[0]).write(message[1])
-with input_container:
-    analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
 
 user_input = st.chat_input("Query",disabled=session.input_disabled)
 
