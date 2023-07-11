@@ -96,7 +96,12 @@ q2y_list = [
     f"Does {institute} have exposure to other off-balance sheet items greater than 100% of total capital?"
     ]
 
-def analyze():
+for message in session.transcript:
+    st.chat_message(message[0]).write(message[1])
+
+analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled)
+
+if analuze_button:
     session.analyze_disabled = True
     session.transcript.append(["assistant",q1])
     q1_ans = get_answer(q1)
@@ -135,11 +140,6 @@ def analyze():
         else:
             institute_type = "Full Form"
 
-
-for message in session.transcript:
-    st.chat_message(message[0]).write(message[1])
-
-analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
 
 # if user_input:
 #     output = agent.run(user_input)
