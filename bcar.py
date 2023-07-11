@@ -102,14 +102,14 @@ def analyze():
         session.transcript.append(["assistant",q1])
         q1_ans = get_answer(q1)
         session.transcript.append(["user",q1_ans])
-        if q1_ans.starts_with("Yes"):
+        if q1_ans.startswith("Yes"):
             for qs in q1y_list:
                 session.transcript.append(["assistant",qs])
                 qs_ans = get_answer(qs)
                 session.transcript.append(["user",qs_ans])
                 if qs_ans.starts_with("No"):
                     break
-        elif q1_ans.starts_with("No"):
+        elif q1_ans.startswith("No"):
             for qs in q1n_list:
                 session.transcript.append(["assistant",qs])
                 qs_ans = get_answer(qs)
