@@ -109,12 +109,12 @@ agent = RetrievalQA.from_chain_type(llm = llm,
 
 st.title("BMO Chatbot")
 
-if 'something' not in st.session_state:
-    st.session_state.something = ''
+# if 'something' not in st.session_state:
+#     st.session_state.something = ''
 
-def submit():
-    st.session_state.something = st.session_state.widget
-    st.session_state.widget = ''
+# def submit():
+#     st.session_state.something = st.session_state.widget
+#     st.session_state.widget = ''
 
 if 'generated' not in st.session_state:
     st.session_state['generated'] = []
@@ -122,7 +122,7 @@ if 'generated' not in st.session_state:
 if 'past' not in st.session_state:
     st.session_state['past'] = []
 messages = st.container()
-user_input = st.chat_input("Query", key="widget", on_submit=submit)
+user_input = st.chat_input("Query")
 relevent_docs = st.expander("Relevent Docs", expanded=False)
 if st.session_state.something:
     output = agent.run(st.session_state.something)
