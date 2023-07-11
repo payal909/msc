@@ -32,7 +32,7 @@ embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
 institute_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
 
 institute = st.selectbox(label="Institute",options=institute_names)
-analyse_button = st.button("Analyse",use_container_width=True)
+analyze_button = st.button("Analyze",use_container_width=True)
 
 bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
 
