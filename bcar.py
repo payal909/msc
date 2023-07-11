@@ -34,7 +34,11 @@ embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
 
 bank_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
 
-bank_name = st.multiselect("Institute",bank_names)
+l,r = st.columns([2,1])
+with l:
+    bank_name = st.selectbox("Institute",bank_names)
+with r:
+    analyse_button = st.button("Analyse")
 # template = """
 # You are virtual assistant of OSFI.
 # Use the following  context (delimited by <ctx></ctx>), and the chat history (delimited by <hs></hs>) to answer the question:
