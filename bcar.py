@@ -37,8 +37,10 @@ analyze_button = st.button("Analyze",use_container_width=True)
 bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
 
 template = """
-You are virtual assistant of OSFI.
-Use the following  context (delimited by <ctx></ctx>) to answer the question:
+You are a helpful virtual assistant of OSFI. Analyze the context and answer the question in either "yes" or "no" only. Remember the
+answer should be only "Yes" or "No". If you don't know the answer, just answer "No".
+Use the following context (delimited by <ctx></ctx>) to answer the question:
+
 ------
 <ctx>
 {context}
