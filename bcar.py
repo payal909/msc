@@ -73,7 +73,6 @@ institute_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 
 input_container = st.container()
 with input_container:
     institute = st.selectbox(label="Institute",options=institute_names)
-chat_container = st.container()
 bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
 
 # messages = st.container()
@@ -104,19 +103,17 @@ def analyze():
     session.transcript.append(["assistant",q1])
     q1_ans = get_answer(q1)
     session.transcript.append(["user",q1_ans])
-    with chat_container:
-        st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
-        st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
+    st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
+    st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
     institute_type = "Short Form"
     possibly_cat3 = False
     if q1_ans.startswith("Yes"):
         for qs in q1y_list:
             session.transcript.append(["assistant",qs])
             qs_ans = get_answer(qs)
-            session.transcript.append(["user",qs_ans])
-            with chat_container:
-                st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
-                st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
+            session.transcript.append(["user",qs_ans])        
+            st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
+            st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
             if qs_ans.startswith("No"):
                 possibly_cat3 = True
                 break
@@ -125,9 +122,8 @@ def analyze():
             session.transcript.append(["assistant",qs])
             qs_ans = get_answer(qs)
             session.transcript.append(["user",qs_ans])
-            with chat_container:
-                st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
-                st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
+            st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
+            st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
             if qs_ans.startswith("No"):
                 possibly_cat3 = True
                 break
@@ -135,18 +131,16 @@ def analyze():
         institute_type = "Category III"
         session.transcript.append(["assistant",q2])
         q2_ans = get_answer(q2)
-        session.transcript.append(["user",q2_ans])
-        with chat_container:
-            st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
-            st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
+        session.transcript.append(["user",q2_ans])        
+        st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
+        st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
         if q2_ans.startswith("Yes"):
             for qs in q2y_list:
                 session.transcript.append(["assistant",qs])
                 qs_ans = get_answer(qs)
-                session.transcript.append(["user",qs_ans])
-                with chat_container:
-                    st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
-                    st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
+                session.transcript.append(["user",qs_ans])                
+                st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
+                st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
                 if qs_ans.startswith("Yes"):
                     institute_type = "Full Form"
                     break
