@@ -75,9 +75,6 @@ with input_container:
     institute = st.selectbox(label="Institute",options=institute_names)
 bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
 
-# messages = st.container()
-# user_input = st.chat_input("Query",disabled=session['input_disabled'])
-
 q1 = f"Does {institute} have a parent company?"
 q1y_list = [
     f"Is {institute}'s parent an operating company regulated by OSFI?",
@@ -146,12 +143,15 @@ def analyze():
                     break
         else:
             institute_type = "Full Form"
+    session.input_disabled = False
 
 
 # for message in session.transcript:
 #     st.chat_message(message[0]).write(message[1])
 with input_container:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
+
+user_input = st.chat_input("Query",disabled=session.input_disabled)
 
 # if user_input:
 #     output = agent.run(user_input)
