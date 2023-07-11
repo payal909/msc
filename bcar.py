@@ -96,16 +96,12 @@ q2y_list = [
     f"Does {institute} have exposure to other off-balance sheet items greater than 100% of total capital?"
     ]
 
-for message in session.transcript:
-    st.chat_message(message[0]).write(message[1])
-
-analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled)
-
-if analyze_button:
+def analyze():
     session.analyze_disabled = True
     session.transcript.append(["assistant",q1])
     q1_ans = get_answer(q1)
     session.transcript.append(["user",q1_ans])
+    st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
     institute_type = "Short Form"
     possibly_cat3 = False
     if q1_ans.startswith("Yes"):
@@ -113,6 +109,7 @@ if analyze_button:
             session.transcript.append(["assistant",qs])
             qs_ans = get_answer(qs)
             session.transcript.append(["user",qs_ans])
+            st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
             if qs_ans.startswith("No"):
                 possibly_cat3 = True
                 break
@@ -121,6 +118,7 @@ if analyze_button:
             session.transcript.append(["assistant",qs])
             qs_ans = get_answer(qs)
             session.transcript.append(["user",qs_ans])
+            st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
             if qs_ans.startswith("No"):
                 possibly_cat3 = True
                 break
@@ -129,17 +127,24 @@ if analyze_button:
         session.transcript.append(["assistant",q2])
         q2_ans = get_answer(q2)
         session.transcript.append(["user",q2_ans])
+        st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
         if q2_ans.startswith("Yes"):
             for qs in q2y_list:
                 session.transcript.append(["assistant",qs])
                 qs_ans = get_answer(qs)
                 session.transcript.append(["user",qs_ans])
+                st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
                 if qs_ans.startswith("Yes"):
                     institute_type = "Full Form"
                     break
         else:
             institute_type = "Full Form"
 
+
+# for message in session.transcript:
+#     st.chat_message(message[0]).write(message[1])
+
+analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled)
 
 # if user_input:
 #     output = agent.run(user_input)
