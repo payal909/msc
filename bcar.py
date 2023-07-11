@@ -101,7 +101,7 @@ for message in session.transcript:
 
 analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled)
 
-if analuze_button:
+if analyze_button:
     session.analyze_disabled = True
     session.transcript.append(["assistant",q1])
     q1_ans = get_answer(q1)
