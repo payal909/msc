@@ -92,7 +92,7 @@ messages = st.container()
 user_input = st.text_input("Query", key="widget", on_change=submit)
 if st.session_state.something:
     output = agent.run(st.session_state.something)
-    print("\n\n\n",bcar_retriever.as_retriever().get_relevant_documents(st.session_state.something),"\n\n\n")
+    st.write("\n\n\n",bcar_retriever.as_retriever().get_relevant_documents(st.session_state.something),"\n\n\n")
     st.session_state.past.append(st.session_state.something)
     st.session_state.generated.append(output)
 if 'generated' in st.session_state:
