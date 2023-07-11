@@ -73,6 +73,7 @@ institute_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 
 
 institute = st.empty()
 institute.selectbox(label="Institute",options=institute_names)
+
 bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
 
 q1 = f"Does {institute} have a parent company?"
