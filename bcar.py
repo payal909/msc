@@ -99,15 +99,23 @@ with st.spinner():
     session.transcript.append(["assistant",q1])
     q1_ans = get_answer(q1)
     session.transcript.append(["user",q1_ans])
-    if q1_ans == "Yes":
+    if q1_ans.starts_with("Yes"):
         for qs in q1y_list:
             session.transcript.append(["assistant",qs])
             qs_ans = get_answer(qs)
             session.transcript.append(["user",qs_ans])
-            if qs_ans == "No":
+            if qs_ans.starts_with("No"):
                 break
-    for message in session.transcript:
-        st.chat_message(message[0]).write(message[1])
+    elif q1_ans.starts_with("No"):
+        for qs in q1n_list:
+            session.transcript.append(["assistant",qs])
+            qs_ans = get_answer(qs)
+            session.transcript.append(["user",qs_ans])
+            if qs_ans.starts_with("No"):
+                break
+
+for message in session.transcript:
+    st.chat_message(message[0]).write(message[1])
 
 # if user_input:
 #     output = agent.run(user_input)
