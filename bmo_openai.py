@@ -93,7 +93,8 @@ user_input = st.text_input("Query", key="widget", on_change=submit)
 relevent_docs = st.expander("Relevent Docs", expanded=False)
 if st.session_state.something:
     output = agent.run(st.session_state.something)
-    relevent_docs.write("\n\n\n",bcar_retriever.as_retriever().get_relevant_documents(st.session_state.something),"\n\n\n")
+    with relevent_docs:
+        st.write("\n\n\n",bcar_retriever.as_retriever().get_relevant_documents(st.session_state.something),"\n\n\n")
     st.session_state.past.append(st.session_state.something)
     st.session_state.generated.append(output)
 if 'generated' in st.session_state:
