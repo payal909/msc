@@ -71,8 +71,9 @@ if 'analyze_disabled' not in session:
 institute_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
 
 
-institute = st.empty()
-institute.selectbox(label="Institute",options=institute_names)
+institute_name = st.empty()
+institute = institute_name.selectbox(label="Institute",options=institute_names)
+
 
 q1 = f"Does {institute} have a parent company?"
 q1y_list = [
@@ -147,7 +148,7 @@ def analyze():
             institute_type = "Full Form"
     session.input_disabled = False
 
-    institute.empty()
+    institute_name.empty()
     analyze_button.empty()
 
 analyze_button.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
