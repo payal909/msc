@@ -74,7 +74,7 @@ def get_answer(question):
 
 def updated_analysis(message):
     session.analysis.append(message)
-    st.write(message)
+    analysis_container.write(message)
 
 institute_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
 
@@ -105,52 +105,51 @@ with st.sidebar:
         ]
     
     def analyze():
-        with analysis_container:
-            with st.spinner():
-                session.analyze_disabled = True
-                updated_analysis("The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to you need to answer a series of questions.")
-                q1_ans = get_answer(q1)
-                updated_analysis(q1_ans)
-                institute_type = "Short Form"
-                possibly_cat3 = False
-                if q1_ans.startswith("Yes"):
-                    for qs in q1y_list:
+        with st.spinner():
+            session.analyze_disabled = True
+            updated_analysis("The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to you need to answer a series of questions.")
+            q1_ans = get_answer(q1)
+            updated_analysis(q1_ans)
+            institute_type = "Short Form"
+            possibly_cat3 = False
+            if q1_ans.startswith("Yes"):
+                for qs in q1y_list:
+                    updated_analysis(qs)
+                    qs_ans = get_answer(qs)
+                    updated_analysis(qs_ans)      
+                    if qs_ans.startswith("No"):
+                        possibly_cat3 = True
+                        break
+            elif q1_ans.startswith("No"):
+                for qs in q1n_list:
+                    updated_analysis(qs)
+                    qs_ans = get_answer(qs)
+                    updated_analysis(qs_ans)      
+                    if qs_ans.startswith("No"):
+                        possibly_cat3 = True
+                        break
+            if possibly_cat3:
+                updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III")
+                institute_type = "Category III"
+                updated_analysis(q2)
+                q2_ans = get_answer(q2)
+                updated_analysis(q2_ans)
+                if q2_ans.startswith("Yes"):
+                    for qs in q2y_list:
                         updated_analysis(qs)
                         qs_ans = get_answer(qs)
-                        updated_analysis(qs_ans)      
-                        if qs_ans.startswith("No"):
-                            possibly_cat3 = True
+                        updated_analysis(qs_ans)
+                        if qs_ans.startswith("Yes"):
+                            updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
+                            institute_type = "Full Form"
                             break
-                elif q1_ans.startswith("No"):
-                    for qs in q1n_list:
-                        updated_analysis(qs)
-                        qs_ans = get_answer(qs)
-                        updated_analysis(qs_ans)      
-                        if qs_ans.startswith("No"):
-                            possibly_cat3 = True
-                            break
-                if possibly_cat3:
-                    updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III")
-                    institute_type = "Category III"
-                    updated_analysis(q2)
-                    q2_ans = get_answer(q2)
-                    updated_analysis(q2_ans)
-                    if q2_ans.startswith("Yes"):
-                        for qs in q2y_list:
-                            updated_analysis(qs)
-                            qs_ans = get_answer(qs)
-                            updated_analysis(qs_ans)
-                            if qs_ans.startswith("Yes"):
-                                updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
-                                institute_type = "Full Form"
-                                break
-                            updated_analysis("Based on the answers of the above question the institude comes under BCAR Category III")
-                    else:
-                        updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
-                        institute_type = "Full Form"
+                        updated_analysis("Based on the answers of the above question the institude comes under BCAR Category III")
                 else:
-                    updated_analysis("Based on the answers of the above question the institude comes under BCAR Short Form Category")
-                session.input_disabled = False
+                    updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
+                    institute_type = "Full Form"
+            else:
+                updated_analysis("Based on the answers of the above question the institude comes under BCAR Short Form Category")
+            session.input_disabled = False
 
     analyze_button.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
     bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
