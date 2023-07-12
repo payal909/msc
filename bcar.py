@@ -72,16 +72,17 @@ def get_answer(question):
     })
     return agent.run(question)
 
-def updated_analysis(message):
-    session.analysis.append(message)
-    analysis_container.write(message)
-
 institute_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
 
 with st.sidebar:
     institute = st.selectbox(label="Institute",options=institute_names)
     analyze_button = st.empty()
-    analysis_container = st.container()
+    analysis_container = st.columns(1)
+
+def updated_analysis(message):
+    session.analysis.append(message)
+    with analysis_container:
+        st.write(message)
 
 
     q1 = f"Does {institute} have a parent company?"
