@@ -100,6 +100,8 @@ bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, inde
 
 def analyze():
     session.analyze_disabled = True
+    session.transcript.append(["assistant","The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to you need to answer a series of questions."])
+    st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
     session.transcript.append(["assistant",q1])
     q1_ans = get_answer(q1)
     session.transcript.append(["user",q1_ans])
@@ -142,10 +144,19 @@ def analyze():
                 st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
                 st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
                 if qs_ans.startswith("Yes"):
+                    session.transcript.append(["assistant","Based on the answers of the above question the institude comes under Full BCAR Category"])
+                    st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
                     institute_type = "Full Form"
                     break
+                session.transcript.append(["assistant","Based on the answers of the above question the institude comes under BCAR Category III"])
+                st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
         else:
+            session.transcript.append(["assistant","Based on the answers of the above question the institude comes under Full BCAR Category"])
+            st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
             institute_type = "Full Form"
+    else:
+        session.transcript.append(["assistant","Based on the answers of the above question the institude comes under BCAR Short Form Category"])
+        st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
     session.input_disabled = False
 
     institute_name.empty()
