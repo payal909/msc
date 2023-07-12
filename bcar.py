@@ -25,6 +25,20 @@ import streamlit as st
 # from langchain.document_loaders import UnstructuredPDFLoader
 # _ = load_dotenv(find_dotenv())
 
+
+session = st.session_state
+if 'transcript' not in session:
+    session.transcript = []
+
+if 'analysis' not in session:
+    session.analysis = []
+
+if 'input_disabled' not in session:
+    session.input_disabled = True
+
+if 'analyze_disabled' not in session:
+    session.analyze_disabled = False
+
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.1)
 embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
@@ -58,127 +72,87 @@ def get_answer(question):
     })
     return agent.run(question)
 
-session = st.session_state
-if 'transcript' not in session:
-    session.transcript = []
-
-if 'input_disabled' not in session:
-    session.input_disabled = True
-
-if 'analyze_disabled' not in session:
-    session.analyze_disabled = False
+def updated_analysis(message):
+    session.analysis.append(message)
+    with st.sidebar:
+        st.write(message)
 
 institute_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
 
+with st.sidebar:
+    institute = st.selectbox(label="Institute",options=institute_names)
 
-institute_name = st.empty()
-institute = institute_name.selectbox(label="Institute",options=institute_names)
 
-
-q1 = f"Does {institute} have a parent company?"
-q1y_list = [
-    f"Is {institute}'s parent an operating company regulated by OSFI?",
-    f"Has {institute}'s parent adopted an internal rating (IRB) approach to credit risk?",
-    f"Is {institute} a fully- consolidated subsidiary?",
-    f"Does {institute} have at least 95% of its credit risk exposures captured under the IRB approach?"
-    ]
-q1n_list = [
-    f"Has {institute} adopted an internal rating (IRB) approach to credit risk?",
-    f"Is {institute} a fully- consolidated subsidiary?",
-    f"Does {institute} have at least 95% of its credit risk exposures captured under the IRB approach?"
-    ]
-q2 = f"Is {institute} reporting less than $10 billion in total assets?"
-q2y_list = [
-    f"Is {institute} reporting greater than $100 million in total loans?",
-    f"Does {institute} have an interest rate or foreign exchange derivatives with a combined notional amount greater than 100% of total capital?",
-    f"Does {institute} have any other types of derivative exposure?",
-    f"Does {institute} have exposure to other off-balance sheet items greater than 100% of total capital?"
-    ]
-
-analyze_button = st.empty()
-bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
-
-def analyze():
-    session.analyze_disabled = True
-    session.transcript.append(["assistant","The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to you need to answer a series of questions."])
-    st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
-    session.transcript.append(["assistant",q1])
-    q1_ans = get_answer(q1)
-    session.transcript.append(["user",q1_ans])
-    st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
-    st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
-    institute_type = "Short Form"
-    possibly_cat3 = False
-    if q1_ans.startswith("Yes"):
-        for qs in q1y_list:
-            session.transcript.append(["assistant",qs])
-            qs_ans = get_answer(qs)
-            session.transcript.append(["user",qs_ans])        
-            st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
-            st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
-            if qs_ans.startswith("No"):
-                possibly_cat3 = True
-                break
-    elif q1_ans.startswith("No"):
-        for qs in q1n_list:
-            session.transcript.append(["assistant",qs])
-            qs_ans = get_answer(qs)
-            session.transcript.append(["user",qs_ans])
-            st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
-            st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
-            if qs_ans.startswith("No"):
-                possibly_cat3 = True
-                break
-    if possibly_cat3:
-        session.transcript.append(["assistant","Based on the answers of the above question the institude does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III"])
-        st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
-        institute_type = "Category III"
-        session.transcript.append(["assistant",q2])
-        q2_ans = get_answer(q2)
-        session.transcript.append(["user",q2_ans])        
-        st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
-        st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
-        if q2_ans.startswith("Yes"):
-            for qs in q2y_list:
-                session.transcript.append(["assistant",qs])
-                qs_ans = get_answer(qs)
-                session.transcript.append(["user",qs_ans])                
-                st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
-                st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
-                if qs_ans.startswith("Yes"):
-                    session.transcript.append(["assistant","Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category"])
-                    st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
+    q1 = f"Does {institute} have a parent company?"
+    q1y_list = [
+        f"Is {institute}'s parent an operating company regulated by OSFI?",
+        f"Has {institute}'s parent adopted an internal rating (IRB) approach to credit risk?",
+        f"Is {institute} a fully- consolidated subsidiary?",
+        f"Does {institute} have at least 95% of its credit risk exposures captured under the IRB approach?"
+        ]
+    q1n_list = [
+        f"Has {institute} adopted an internal rating (IRB) approach to credit risk?",
+        f"Is {institute} a fully- consolidated subsidiary?",
+        f"Does {institute} have at least 95% of its credit risk exposures captured under the IRB approach?"
+        ]
+    q2 = f"Is {institute} reporting less than $10 billion in total assets?"
+    q2y_list = [
+        f"Is {institute} reporting greater than $100 million in total loans?",
+        f"Does {institute} have an interest rate or foreign exchange derivatives with a combined notional amount greater than 100% of total capital?",
+        f"Does {institute} have any other types of derivative exposure?",
+        f"Does {institute} have exposure to other off-balance sheet items greater than 100% of total capital?"
+        ]
+    
+    def analyze():
+        with st.spinner():
+            session.analyze_disabled = True
+            updated_analysis("The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to you need to answer a series of questions.")
+            q1_ans = get_answer(q1)
+            updated_analysis(q1_ans)
+            institute_type = "Short Form"
+            possibly_cat3 = False
+            if q1_ans.startswith("Yes"):
+                for qs in q1y_list:
+                    updated_analysis(qs)
+                    qs_ans = get_answer(qs)
+                    updated_analysis(qs_ans)      
+                    if qs_ans.startswith("No"):
+                        possibly_cat3 = True
+                        break
+            elif q1_ans.startswith("No"):
+                for qs in q1n_list:
+                    updated_analysis(qs)
+                    qs_ans = get_answer(qs)
+                    updated_analysis(qs_ans)      
+                    if qs_ans.startswith("No"):
+                        possibly_cat3 = True
+                        break
+            if possibly_cat3:
+                updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III")
+                institute_type = "Category III"
+                updated_analysis(q2)
+                q2_ans = get_answer(q2)
+                updated_analysis(q2_ans)
+                if q2_ans.startswith("Yes"):
+                    for qs in q2y_list:
+                        updated_analysis(qs)
+                        qs_ans = get_answer(qs)
+                        updated_analysis(qs_ans)
+                        if qs_ans.startswith("Yes"):
+                            updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
+                            institute_type = "Full Form"
+                            break
+                        updated_analysis("Based on the answers of the above question the institude comes under BCAR Category III")
+                else:
+                    updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
                     institute_type = "Full Form"
-                    break
-                session.transcript.append(["assistant","Based on the answers of the above question the institude comes under BCAR Category III"])
-                st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
-        else:
-            session.transcript.append(["assistant","Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category"])
-            st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
-            institute_type = "Full Form"
-    else:
-        session.transcript.append(["assistant","Based on the answers of the above question the institude comes under BCAR Short Form Category"])
-        st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
-    session.input_disabled = False
+            else:
+                updated_analysis("Based on the answers of the above question the institude comes under BCAR Short Form Category")
+            session.input_disabled = False
 
-    institute_name.empty()
-    analyze_button.empty()
+    analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
+    bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
 
-analyze_button.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
-
-# for message in session.transcript:
-#     st.chat_message(message[0]).write(message[1])
 
 user_input = st.chat_input("Query",disabled=session.input_disabled)
 
-# if user_input:
-#     output = agent.run(user_input)
-#     # with relevent_docs:
-#     #     st.write("\n\n\n",bcar_retriever.as_retriever().get_relevant_documents(user_input),"\n\n\n")
-#     session.past.append(user_input)
-#     session.generated.append(output)
-# if 'generated' in session:
-#     with messages:
-#         for i in range(len(session['generated'])):
-#             st.chat_message("user").write(session['past'][i])
-#             st.chat_message("assistant").write(session["generated"][i])
