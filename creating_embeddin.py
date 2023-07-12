@@ -27,7 +27,7 @@ from langchain.document_loaders import JSONLoader
 
 # file_names = os.listdir("./data/")
 
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = ""
 llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.1)
 embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size = 1)
 
