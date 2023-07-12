@@ -104,7 +104,7 @@ def updated_analysis(message):
     #     st.write(message)
 
 def analyze():
-    with st.spinner("Checking if institute is BCAR Short Form Category"):
+    with st.sidebar.spinner(f"Checking if {institute} belongs to BCAR Short Form Category"):
         session.analyze_disabled = True
         updated_analysis("The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to you need to answer a series of questions.")
         q1_ans = get_answer(q1)
@@ -127,7 +127,7 @@ def analyze():
                 if qs_ans.startswith("No"):
                     possibly_cat3 = True
                     break
-    with st.spinner("Checking if institute is BCAR Category III Category"):
+    with st.sidebar.spinner(f"Checking if {institute} belongs to BCAR Category III Category"):
         if possibly_cat3:
             updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III")
             institute_type = "Category III"
