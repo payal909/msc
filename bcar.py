@@ -98,6 +98,11 @@ q2y_list = [
     f"Does {institute} have exposure to other off-balance sheet items greater than 100% of total capital?"
     ]
     
+def updated_analysis(message):
+    session.analysis.append(message)
+    # with st.sidebar:
+    #     st.write(message)
+
 def analyze():
     session.analyze_disabled = True
     updated_analysis("The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to you need to answer a series of questions.")
@@ -146,11 +151,7 @@ def analyze():
 
 with st.sidebar:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
-    analysis_container = st.columns(1)
-
-def updated_analysis(message):
-    session.analysis.append(message)
-    with st.sidebar:
+    for message in session.analysis:
         st.write(message)
 
 
