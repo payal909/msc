@@ -1,0 +1,85 @@
+Schedule Number|Schedule Number in BCAR 2020|Schedules|Schedule Number - Schedules|Short Form|Category 3|Full Form
+10.010|1|Ratio Calculations|10.010 - Ratio Calculations|TRUE|FALSE|TRUE
+10.011|1|Simplified Risk-Based Capital Ratio Calculations for Category III SMSBs|10.011 - Simplified Risk-Based Capital Ratio Calculations for Category III SMSBs|FALSE|TRUE|TRUE
+10.020|2|Summary of Risk-weighted Assets (RWA)s and Exposures at Default (EAD)|10.020 - Summary of Risk-weighted Assets (RWA)s and Exposures at Default (EAD)|TRUE|FALSE|TRUE
+10.030|2A|Summary of Capital Floor Risk-Weighted Assets|10.030 - Summary of Capital Floor Risk-Weighted Assets|FALSE|FALSE|TRUE
+10.040|46|Counter-Cyclical Capital Buffer (CCyB)|10.040 - Counter-Cyclical Capital Buffer (CCyB)|FALSE|FALSE|TRUE
+10.041|46|Counter-Cyclical Capital Buffer (CCyB) for Category III SMSBs|10.041 - Counter-Cyclical Capital Buffer (CCyB) for Category III SMSBs|FALSE|TRUE|TRUE
+10.050|39|Off-balance Sheet Exposures Excluding Derivatives and Securitization Exposures|10.050 - Off-balance Sheet Exposures Excluding Derivatives and Securitization Exposures|TRUE|FALSE|TRUE
+10.060|44|Gross Exposures by Original Obligor and by Ultimate Guarantor|10.060 - Gross Exposures by Original Obligor and by Ultimate Guarantor|FALSE|FALSE|TRUE
+10.070|45|Balance Sheet Coverage by Risk Type and Reconciliation to Consolidated Balance Sheet|10.070 - Balance Sheet Coverage by Risk Type and Reconciliation to Consolidated Balance Sheet|TRUE|FALSE|TRUE
+10.080|New Schedule|Summary of All Insured Canadian Mortgages and HELOCs|10.080 - Summary of All Insured Canadian Mortgages and HELOCs|FALSE|FALSE|TRUE
+10.090|New Schedule|Summary of All Standardized Approach Exposures Subject to Currency Mismatch Multiplier|10.090 - Summary of All Standardized Approach Exposures Subject to Currency Mismatch Multiplier|FALSE|FALSE|TRUE
+20.010|3|Capital and Total Loss Absorbing Capacity (TLAC) Elements|20.010 - Capital and Total Loss Absorbing Capacity (TLAC) Elements|TRUE|TRUE|TRUE
+20.020|3A|Qualifying Capital Issued Out of Subsidiaries|20.020 - Qualifying Capital Issued Out of Subsidiaries|TRUE|FALSE|TRUE
+20.030|4|Allowance for Impairment: Capital Treatment|20.030 - Allowance for Impairment: Capital Treatment|TRUE|TRUE|TRUE
+30.010|43|Minimum Capital Required for Operational Risk|30.010 - Minimum Capital Required for Operational Risk|TRUE|TRUE|TRUE
+40.010|7|Sovereign|40.010 - Sovereign|FALSE|FALSE|TRUE
+40.020|7|Public Sector Entities (PSEs)|40.020 - Public Sector Entities (PSEs)|TRUE|FALSE|TRUE
+40.030|7|Multilateral Development Banks (MDBs) |40.030 - Multilateral Development Banks (MDBs) |FALSE|FALSE|TRUE
+40.040|8|Bank (excluding Covered Bonds)|40.040 - Bank (excluding Covered Bonds)|FALSE|FALSE|TRUE
+40.050|8|Covered bonds|40.050 - Covered bonds|FALSE|FALSE|TRUE
+40.060|8|Securities Firms and Other Financial Insititutions Treated as Bank|40.060 - Securities Firms and Other Financial Insititutions Treated as Bank|FALSE|FALSE|TRUE
+40.070|5|Large Corporate|40.070 - Large Corporate|FALSE|FALSE|TRUE
+40.080|5|Mid-sized Corporate|40.080 - Mid-sized Corporate|FALSE|FALSE|TRUE
+40.090|5|Small and Medium-Sized Entities (SMEs) Treated as Corporate|40.090 - Small and Medium-Sized Entities (SMEs) Treated as Corporate|FALSE|FALSE|TRUE
+40.10|5|Securities Firms and Other Financial Instititutions Treated as Corporate|40.10 - Securities Firms and Other Financial Instititutions Treated as Corporate|FALSE|FALSE|TRUE
+40.110|5|Specialized Lending|40.110 - Specialized Lending|FALSE|FALSE|TRUE
+40.120|38|Subordinated Debt, Equity and Other Capital Instruments|40.120 - Subordinated Debt, Equity and Other Capital Instruments|FALSE|TRUE|TRUE
+40.130|10|Regulatory Retail - Transactors|40.130 - Regulatory Retail - Transactors|FALSE|FALSE|TRUE
+40.140|10|Regulatory Retail - Revolvers|40.140 - Regulatory Retail - Revolvers|FALSE|FALSE|TRUE
+40.150|10|Regulatory Retail - Indirect Auto|40.150 - Regulatory Retail - Indirect Auto|FALSE|FALSE|TRUE
+40.160|11|Small Business Entities (SBE) treated as Regulatory retail|40.160 - Small Business Entities (SBE) treated as Regulatory retail|FALSE|FALSE|TRUE
+40.170|10|Regulatory Retail - All Other Exposures|40.170 - Regulatory Retail - All Other Exposures|FALSE|FALSE|TRUE
+40.180|10|Non-regulatory Retail|40.180 - Non-regulatory Retail|FALSE|FALSE|TRUE
+40.190|9|General Residential Real Estate excl. HELOCs|40.190 - General Residential Real Estate excl. HELOCs|FALSE|FALSE|TRUE
+40.20|9|General HELOCs|40.20 - General HELOCs|FALSE|FALSE|TRUE
+40.210|9|Income-Producing Residential Real Estate excl. HELOCs|40.210 - Income-Producing Residential Real Estate excl. HELOCs|FALSE|FALSE|TRUE
+40.220|9|Income-Producing HELOCs|40.220 - Income-Producing HELOCs|FALSE|FALSE|TRUE
+40.220a|New Schedule|Residential Real Estate Exposures that do not meet expectations related to B-20 (Mortgages)|40.220a - Residential Real Estate Exposures that do not meet expectations related to B-20 (Mortgages)|FALSE|FALSE|TRUE
+40.220b|New Schedule|Residential Real Estate Exposures that do not meet expectations related to B-20 (HELOCs)|40.220b - Residential Real Estate Exposures that do not meet expectations related to B-20 (HELOCs)|FALSE|FALSE|TRUE
+40.230|9|General Commercial Real Estate (CRE)|40.230 - General Commercial Real Estate (CRE)|FALSE|FALSE|TRUE
+40.240|9|Income-Producing CRE|40.240 - Income-Producing CRE|FALSE|FALSE|TRUE
+40.250|5|Land Acquisition, Development and Construction (ADC) excluding HVCRE|40.250 - Land Acquisition, Development and Construction (ADC) excluding HVCRE|FALSE|FALSE|TRUE
+40.260|9|Reverse Mortgages|40.260 - Reverse Mortgages|FALSE|FALSE|TRUE
+40.270|9|Mortgage-Backed Securities (MBS)|40.270 - Mortgage-Backed Securities (MBS)|FALSE|FALSE|TRUE
+40.280|12 and 35|Equity Investments in Funds|40.280 - Equity Investments in Funds|FALSE|TRUE|TRUE
+40.290|38|Other credit risk-weighted assets|40.290 - Other credit risk-weighted assets|TRUE|TRUE|TRUE
+50.010|26|Sovereign|50.010 - Sovereign|FALSE|FALSE|TRUE
+50.020|26|PSEs|50.020 - PSEs|FALSE|FALSE|TRUE
+50.030|26|MDBs |50.030 - MDBs |FALSE|FALSE|TRUE
+50.040|27|Bank (excluding Covered Bonds)|50.040 - Bank (excluding Covered Bonds)|FALSE|FALSE|TRUE
+50.050|27|Covered Bonds|50.050 - Covered Bonds|FALSE|FALSE|TRUE
+50.060|27|Securities Firms and Other Financial Institutions Treated as Bank|50.060 - Securities Firms and Other Financial Institutions Treated as Bank|FALSE|FALSE|TRUE
+50.070|22A|Large Corporate|50.070 - Large Corporate|FALSE|FALSE|TRUE
+50.080|22A|Mid-sized Corporate|50.080 - Mid-sized Corporate|FALSE|FALSE|TRUE
+50.090|25A|SMEs treated as Corporate|50.090 - SMEs treated as Corporate|FALSE|FALSE|TRUE
+50.10|25A|Securities Firms and Other Financial Institutions Treated as Corporate|50.10 - Securities Firms and Other Financial Institutions Treated as Corporate|FALSE|FALSE|TRUE
+50.110|23A|Specialized Lending - Project Financing|50.110 - Specialized Lending - Project Financing|FALSE|FALSE|TRUE
+50.120|23A|Specialized Lending - Object Financing|50.120 - Specialized Lending - Object Financing|FALSE|FALSE|TRUE
+50.130|23A|Specialized Lending - Commodity Financing|50.130 - Specialized Lending - Commodity Financing|FALSE|FALSE|TRUE
+50.140|23A|Specialized Lending - HVCRE including ADC|50.140 - Specialized Lending - HVCRE including ADC|FALSE|FALSE|TRUE
+50.150|29|Specialized Lending - Slotting Approach|50.150 - Specialized Lending - Slotting Approach|FALSE|FALSE|TRUE
+50.160|33|Regulatory Retail - Transactors|50.160 - Regulatory Retail - Transactors|FALSE|FALSE|TRUE
+50.170|33|Regulatory Retail - Revolvers|50.170 - Regulatory Retail - Revolvers|FALSE|FALSE|TRUE
+50.180|33|Regulatory Retail - Indirect Auto|50.180 - Regulatory Retail - Indirect Auto|FALSE|FALSE|TRUE
+50.190|34|SBEs treated as Regulatory Retail|50.190 - SBEs treated as Regulatory Retail|FALSE|FALSE|TRUE
+50.20|32|Regulatory Retail - All Other Exposures |50.20 - Regulatory Retail - All Other Exposures |FALSE|FALSE|TRUE
+50.210|33|Non-regulatory Retail|50.210 - Non-regulatory Retail|FALSE|FALSE|TRUE
+50.220|30|General Residential Real Estate excl. HELOCs|50.220 - General Residential Real Estate excl. HELOCs|FALSE|FALSE|TRUE
+50.230|31|General HELOCs|50.230 - General HELOCs|FALSE|FALSE|TRUE
+50.240|30|Income-Producing Residential Real Estate excl. HELOCs|50.240 - Income-Producing Residential Real Estate excl. HELOCs|FALSE|FALSE|TRUE
+50.250|31|Income-Producing HELOCs|50.250 - Income-Producing HELOCs|FALSE|FALSE|TRUE
+50.250a|New Schedule|Residential Real Estate Exposures that do not meet expectations related to B-20 (Mortgages)|50.250a - Residential Real Estate Exposures that do not meet expectations related to B-20 (Mortgages)|FALSE|FALSE|TRUE
+50.250b|New Schedule|Residential Real Estate Exposures that do not meet expectations related to B-20 (HELOCs)|50.250b - Residential Real Estate Exposures that do not meet expectations related to B-20 (HELOCs)|FALSE|FALSE|TRUE
+50.260|31|General CRE|50.260 - General CRE|FALSE|FALSE|TRUE
+50.270|31|Income-Producing CRE|50.270 - Income-Producing CRE|FALSE|FALSE|TRUE
+50.280|31|Land ADC excluding HVCRE|50.280 - Land ADC excluding HVCRE|FALSE|FALSE|TRUE
+50.290|35|Equity Investment in Funds|50.290 - Equity Investment in Funds|FALSE|FALSE|TRUE
+60.020|37|Securitization exposures subject to IRB approval|60.020 - Securitization exposures subject to IRB approval|FALSE|FALSE|TRUE
+60.030|41|Summary of Banking Book Securitization Exposures|60.030 - Summary of Banking Book Securitization Exposures|TRUE|FALSE|TRUE
+70.020|28|Counterparty Credit Risk of Trading Book Exposures |70.020 - Counterparty Credit Risk of Trading Book Exposures |FALSE|FALSE|TRUE
+70.030|40|Derivative Contracts|70.030 - Derivative Contracts|TRUE|FALSE|TRUE
+70.040|38|Central Counterparty (CCP) credit RWAs|70.040 - Central Counterparty (CCP) credit RWAs|TRUE|FALSE|TRUE
+80.010|38|Credit Valuation Adjustments (CVA)|80.010 - Credit Valuation Adjustments (CVA)|FALSE|FALSE|TRUE
+90.010|42|Minimum Capital Required for Market Risk*|90.010 - Minimum Capital Required for Market Risk*|TRUE|FALSE|TRUE

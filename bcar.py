@@ -161,3 +161,43 @@ with st.sidebar:
 
 user_input = st.chat_input("Query",disabled=session.input_disabled)
 
+bcar_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Basel Capital Adequacy Reporting (BCAR) 2023 (2)_index")
+schedules_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_index")
+
+bcar_db.merge_from(schedules_db)
+
+chat_template = """
+You are virtual assistant of OSFI.
+Use the following  context (delimited by <ctx></ctx>), and the chat history (delimited by <hs></hs>) to answer the question:
+------
+<ctx>
+{context}
+</ctx>
+------
+<hs>
+{history}
+</hs>
+------
+{question}
+Answer:
+"""
+chat_prompt = PromptTemplate(input_variables=["history", "context", "question"],template=chat_template)
+
+chat_agent = RetrievalQA.from_chain_type(llm = llm,
+        chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
+        retriever=bcar_db.as_retriever(),
+        verbose=False,
+        chain_type_kwargs={
+        "verbose":True,
+        "prompt": chat_prompt,
+        "memory": ConversationBufferMemory(
+            input_key="question"),
+    })
+
+if user_input:
+    session.transcript.append(["user",user_input])
+    bot_output = chat_agent.run(user_input)
+    session.transcript.append(["assistant",bot_output])
+    for message in session.transcript:
+        st.chat_message(message[0]).write(message[1])
+
