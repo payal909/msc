@@ -75,7 +75,7 @@ def get_answer(question):
 institute_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
 with st.sidebar:
     institute = st.selectbox(label="Institute",options=institute_names)
-    
+
 q1 = f"Does {institute} have a parent company?"
 q1y_list = [
     f"Is {institute}'s parent an operating company regulated by OSFI?",
@@ -150,8 +150,7 @@ with st.sidebar:
 
 def updated_analysis(message):
     session.analysis.append(message)
-    with analysis_container:
-        st.write(message)
+    analysis_container.write(message)
 
 
 user_input = st.chat_input("Query",disabled=session.input_disabled)
