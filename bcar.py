@@ -150,7 +150,7 @@ with st.sidebar:
 
 def updated_analysis(message):
     session.analysis.append(message)
-    with st.sidebar():
+    with st.sidebar:
         st.write(message)
 
 
