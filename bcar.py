@@ -130,6 +130,8 @@ def analyze():
                 possibly_cat3 = True
                 break
     if possibly_cat3:
+        session.transcript.append(["assistant","Based on the answers of the above question the institude does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III"])
+        st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
         institute_type = "Category III"
         session.transcript.append(["assistant",q2])
         q2_ans = get_answer(q2)
@@ -144,14 +146,14 @@ def analyze():
                 st.chat_message(session.transcript[-2][0]).write(session.transcript[-2][1])
                 st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
                 if qs_ans.startswith("Yes"):
-                    session.transcript.append(["assistant","Based on the answers of the above question the institude comes under Full BCAR Category"])
+                    session.transcript.append(["assistant","Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category"])
                     st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
                     institute_type = "Full Form"
                     break
                 session.transcript.append(["assistant","Based on the answers of the above question the institude comes under BCAR Category III"])
                 st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
         else:
-            session.transcript.append(["assistant","Based on the answers of the above question the institude comes under Full BCAR Category"])
+            session.transcript.append(["assistant","Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category"])
             st.chat_message(session.transcript[-1][0]).write(session.transcript[-1][1])
             institute_type = "Full Form"
     else:
