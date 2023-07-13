@@ -74,7 +74,7 @@ os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 os.environ["OPENAI_API_BASE"] = "https://testavinx.openai.azure.com/"
 
 # llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.1)
-llm = AzureChatOpenAI(deployment_name="gpt-35-turbo",model_name="gpt-35-turbo")
+llm = AzureChatOpenAI(deployment_name="gpt-35-turbo",model_name="gpt-35-turbo",temperature=0)
 embeddings = OpenAIEmbeddings(deployment="embedding1",
 model="text-embedding-ada-002",
 openai_api_base="https://testavinx.openai.azure.com/",
