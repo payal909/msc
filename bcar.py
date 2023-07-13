@@ -101,7 +101,7 @@ def get_answer(question):
     })
     return agent.run(question)
 
-institute_names = {"Bank of Montreal":"bmo_ar2022 (2)_index","National Bank of Canada":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index","Versa Bank":"VBAR_index"}
+institute_names = {"Bank of Montreal":"bmo_ar2022 (2)_index","Versa Bank":"VBAR_index","National Bank of Canada":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
 
 with st.sidebar:
     institute = st.selectbox(label="Institute",options=institute_names)
@@ -191,10 +191,10 @@ user_input = st.chat_input("Query",disabled=session.input_disabled)
 
 bcar_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Basel Capital Adequacy Reporting (BCAR) 2023 (2)_index")
 schedules_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_index")
-# schedules_csv_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_csv_index")
+schedules_csv_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_csv_index")
 
 bcar_db.merge_from(schedules_db)
-# bcar_db.merge_from(schedules_csv_db)
+bcar_db.merge_from(schedules_csv_db)
 
 chat_template = f"""
 You are virtual assistant of OSFI. You have to help the user working for {institute}. Your job is to help the user file the BCAR {session.institute_type} by providing the list of schedules, 
