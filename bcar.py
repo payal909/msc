@@ -202,10 +202,11 @@ user_input = st.chat_input("Query",disabled=session.input_disabled)
 bcar_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Basel Capital Adequacy Reporting (BCAR) 2023 (2)_index")
 schedules_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_index")
 schedules_csv_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_csv_index")
+bank_info_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
 
 bcar_db.merge_from(schedules_db)
 bcar_db.merge_from(schedules_csv_db)
-bcar_db.merge_from(bank_db)
+bcar_db.merge_from(bank_info_db)
 
 chat_template = f"""
 You are virtual assistant of OSFI. You have to help the user working for {institute}. Your job is to help the user file the BCAR {session.institute_type} by providing the list of schedules, 
