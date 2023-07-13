@@ -82,8 +82,8 @@ openai_api_type="azure",
 chunk_size = 1)
 
 template = """
-You are a helpful virtual assistant of OSFI. Analyze the context and answer the question in "Yes" or "No" only. Remember the
-answer should be only "Yes" or "No". If you don't know the answer, just answer "No"
+You are a helpful virtual assistant of OSFI. Analyze the context and answer the question in one word "Yes" or "No" only. Remember the
+answer should be only "Yes" or "No". If you don't know the answer, just answer "No".
 Use the following context (delimited by <ctx></ctx>) to answer the question:
 
 ------
