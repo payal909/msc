@@ -22,6 +22,7 @@ from langchain import PromptTemplate
 # from langchain import OpenAI, VectorDBQA
 # from langchain.chains.router import MultiRetrievalQAChain
 import streamlit as st
+import pandas as pd
 # from langchain.document_loaders import UnstructuredPDFLoader
 # _ = load_dotenv(find_dotenv())
 
@@ -100,7 +101,7 @@ def get_answer(question):
     })
     return agent.run(question)
 
-institute_names = {"BMO":"bmo_ar2022 (2)_index","NBC":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
+institute_names = {"Bank of Montreal":"bmo_ar2022 (2)_index","National Bank of Canada":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index","Versa Bank":"VBAR_index"}
 
 with st.sidebar:
     institute = st.selectbox(label="Institute",options=institute_names)
@@ -156,7 +157,7 @@ def analyze():
         with st.spinner(f"Checking if {institute} belongs to BCAR Category III Category"):
             if possibly_cat3:
                 updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III")
-                session.institute_type = "Category III"
+                session.institute_type = "Category 3"
                 q2_ans = get_answer(q2)
                 updated_analysis(f"1) {q2} {q2_ans}")    
                 if q2_ans.startswith("Yes"):
@@ -174,6 +175,10 @@ def analyze():
             else:
                 updated_analysis("Based on the answers of the above question the institude comes under BCAR Short Form Category")
             session.input_disabled = False
+    schedules = pd.read_csv("schedules.csv",delimiter="|")
+    schedules = list(schedules[schedules[session.institute_type]=="TRUE"]["Schedule Number - Schedules"])
+    limited_schedules = sum(f"{i+1}) {schedules[i]}\n" for i in range(len(schedules)))
+    st.chat_message("assistant").write(limited_schedules)
 
 with st.sidebar:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
@@ -216,6 +221,7 @@ chat_agent = RetrievalQA.from_chain_type(llm = llm,
         "memory": ConversationBufferMemory(
             input_key="question"),
     })
+
 
 if user_input:
     session.transcript.append(["user",user_input])
