@@ -48,7 +48,7 @@ embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
 
 template = """
 You are a helpful virtual assistant of OSFI. Analyze the context and answer the question in "Yes" or "No" only. Remember the
-answer should be only "Yes" or "No". If you don't know the answer, just answer "No".
+answer should be only "Yes" or "No". If you don't know the answer, just answer "No"
 Use the following context (delimited by <ctx></ctx>) to answer the question:
 
 ------
