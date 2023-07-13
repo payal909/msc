@@ -97,6 +97,12 @@ Answer:
 
 prompt = PromptTemplate(input_variables=["context", "question"],template=template)
 
+institute_names = {"Bank of Montreal":"bmo_ar2022 (2)_index","Versa Bank":"VBAR_index","National Bank of Canada":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
+
+with st.sidebar:
+    institute = st.selectbox(label="Institute",options=institute_names)
+    bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
+
 def get_answer(question):
     agent = RetrievalQA.from_chain_type(llm = llm,
         chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
@@ -109,12 +115,6 @@ def get_answer(question):
             input_key="question"),
     })
     return agent.run(question)
-
-institute_names = {"Bank of Montreal":"bmo_ar2022 (2)_index","Versa Bank":"VBAR_index","National Bank of Canada":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
-
-with st.sidebar:
-    institute = st.selectbox(label="Institute",options=institute_names)
-    bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
 
 q1 = f"Does {institute} have a parent company?"
 q1y_list = [
