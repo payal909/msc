@@ -188,9 +188,8 @@ def analyze():
     schedules = pd.read_csv("schedules.csv",delimiter="|")
     limited_schedules = schedules[schedules[session.institute_type]][["Schedule Number","Schedules"]]
     # limited_schedules = "\n".join([f"{i+1}) {limited_schedules[i]}\n" for i in range(len(limited_schedules))])
-    with st.chat_message("assistant"):
-        st.write(f"According to the information provided the Institute belongs to {session.institute_type} category and thus the required schedules are limited to:")
-        st.dataframe(limited_schedules)
+    session.transcript.append(f"According to the information provided the Institute belongs to {session.institute_type} category and thus the required schedules are limited to:")
+    session.transcript.append(limited_schedules)
 
 with st.sidebar:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
@@ -241,6 +240,10 @@ if user_input:
     session.transcript.append(["user",user_input])
     bot_output = chat_agent.run(user_input)
     session.transcript.append(["assistant",bot_output])
-    for message in session.transcript:
-        st.chat_message(message[0]).write(message[1])
+
+with st.chat_message("assistant"):
+    st.write(session.transcript[0])
+    st.dataframe(session.transcript[1])
+for message in session.transcript[2:]:
+    st.chat_message(message[0]).write(message[1])
 
