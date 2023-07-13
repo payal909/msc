@@ -187,7 +187,7 @@ def analyze():
 
     schedules = pd.read_csv("schedules.csv",delimiter="|")
     schedules = list(schedules[schedules[session.institute_type]=="TRUE"]["Schedule Number - Schedules"])
-    limited_schedules = sum(f"{i+1}) {schedules[i]}\n" for i in range(len(schedules)))
+    limited_schedules = "\n".join([f"{i+1}) {schedules[i]}\n" for i in range(len(schedules))])
     st.chat_message("assistant").write(f"According to the information provided the Institute belongs to {session.institute_type} category and thus the required schedules are limited to:\n\n{limited_schedules}")
 
 with st.sidebar:
