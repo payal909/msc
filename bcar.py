@@ -186,9 +186,11 @@ def analyze():
             session.input_disabled = False
 
     schedules = pd.read_csv("schedules.csv",delimiter="|")
-    schedules = list(schedules[schedules[session.institute_type]]["Schedule Number - Schedules"])
-    limited_schedules = "\n".join([f"{i+1}) {schedules[i]}\n" for i in range(len(schedules))])
-    st.chat_message("assistant").write(f"According to the information provided the Institute belongs to {session.institute_type} category and thus the required schedules are limited to:\n\n{limited_schedules}")
+    limited_schedules = schedules[schedules[session.institute_type]][["Schedule Number","Schedules"]]
+    # limited_schedules = "\n".join([f"{i+1}) {limited_schedules[i]}\n" for i in range(len(limited_schedules))])
+    with st.chat_message("assistant"):
+        st.write(f"According to the information provided the Institute belongs to {session.institute_type} category and thus the required schedules are limited to:")
+        st.dataframe(limited_schedules)
 
 with st.sidebar:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
