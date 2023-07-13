@@ -27,7 +27,7 @@ import streamlit as st
 import pandas as pd
 import json
 
-schedules = pd.read_csv("schedules.csv",delimiter="|")
+# schedules = pd.read_csv("schedules.csv",delimiter="|")
 
 
 # os.environ["OPENAI_API_KEY"] = "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"
@@ -70,12 +70,18 @@ schedules = pd.read_csv("schedules.csv",delimiter="|")
 # with open("./schedules.json","w") as f:
 #     json.dump(json_dict,f,indent = 6)
 
-with open("./schedules.json","r") as f:
-    schedule_dict = json.load(f)
+# with open("./schedules.json","r") as f:
+#     schedule_dict = json.load(f)
 
-# print(schedule_dict.keys())
+# # print(schedule_dict.keys())
 
-schedule_dict = [{"schedule":schedule_dict["Schedule Number - Schedules"][x]+"\n\n"+schedule_dict["Summary"][x]} for x in schedule_dict["Summary"].keys()]
+# schedule_dict = [{"schedule":schedule_dict["Schedule Number - Schedules"][x]+"\n\n"+schedule_dict["Summary"][x]} for x in schedule_dict["Summary"].keys()]
 
-with open("./schedules_summary.json","w") as f:
-    json.dump(schedule_dict,f,indent = 3)
+# with open("./schedules_summary.json","w") as f:
+#     json.dump(schedule_dict,f,indent = 3)
+
+schedules = pd.read_csv("schedules.csv",delimiter="|")
+schedules = list(schedules[schedules["Full Form"]]["Schedule Number - Schedules"])
+print(schedules)
+# limited_schedules = "\n".join([f"{i+1}) {schedules[i]}\n" for i in range(len(schedules))])
+# st.chat_message("assistant").write(f"According to the information provided the Institute belongs to {'Full Form'} category and thus the required schedules are limited to:\n\n{limited_schedules}")
