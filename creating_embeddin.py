@@ -27,7 +27,7 @@ from langchain.document_loaders import JSONLoader
 
 # file_names = os.listdir("./data/")
 
-os.environ["OPENAI_API_KEY"] = ""
+os.environ["OPENAI_API_KEY"] = "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"
 llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.1)
 embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size = 1)
 
@@ -50,11 +50,13 @@ embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size = 1)
 
 loader = JSONLoader(
     file_path='schedules_summary.json',
-    jq_schema='.[].summary')
+    jq_schema='.[].')
 documents = loader.load()
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000,chunk_overlap=100,length_function = len)
-text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=50)
-texts = text_splitter.split_documents(documents)
-docsearch = FAISS.from_documents(texts, embeddings)
-docsearch.save_local(folder_path='FAISS_VS', index_name=f"Schedules_index")
+# text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000,chunk_overlap=100,length_function = len)
+# text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=50)
+# texts = text_splitter.split_documents(documents)
+# docsearch = FAISS.from_documents(texts, embeddings)
+# docsearch.save_local(folder_path='FAISS_VS', index_name=f"Schedules_index")
+
+print(documents)
 

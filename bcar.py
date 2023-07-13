@@ -39,6 +39,9 @@ if 'input_disabled' not in session:
 if 'analyze_disabled' not in session:
     session.analyze_disabled = False
 
+if 'institute_type' not in session:
+    session.institute_type = "Full Form"
+
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.1)
 embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
@@ -100,8 +103,6 @@ q2y_list = [
     
 def updated_analysis(message):
     session.analysis.append(message)
-    # with st.sidebar:
-    #     st.write(message)
 
 def analyze():
     with st.sidebar:
@@ -110,7 +111,7 @@ def analyze():
             updated_analysis("The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to you need to answer a series of questions.")
             q1_ans = get_answer(q1)
             updated_analysis(q1_ans)
-            institute_type = "Short Form"
+            session.institute_type = "Short Form"
             possibly_cat3 = False
             if q1_ans.startswith("Yes"):
                 for qs in q1y_list:
@@ -132,7 +133,7 @@ def analyze():
         with st.spinner(f"Checking if {institute} belongs to BCAR Category III Category"):
             if possibly_cat3:
                 updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III")
-                institute_type = "Category III"
+                session.institute_type = "Category III"
                 updated_analysis(q2)
                 q2_ans = get_answer(q2)
                 updated_analysis(q2_ans)
@@ -143,12 +144,12 @@ def analyze():
                         updated_analysis(qs_ans)
                         if qs_ans.startswith("Yes"):
                             updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
-                            institute_type = "Full Form"
+                            session.institute_type = "Full Form"
                             break
                         updated_analysis("Based on the answers of the above question the institude comes under BCAR Category III")
                 else:
                     updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
-                    institute_type = "Full Form"
+                    session.institute_type = "Full Form"
             else:
                 updated_analysis("Based on the answers of the above question the institude comes under BCAR Short Form Category")
             session.input_disabled = False
@@ -166,10 +167,11 @@ schedules_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings,
 
 bcar_db.merge_from(schedules_db)
 
-chat_template = """
-You are virtual assistant of OSFI.
+chat_template = f"""
+You are virtual assistant of OSFI. You have to help the user working for {institute}. Your job is to help the user file the BCAR {session.institute_type} by providing the list of schedules, 
+for various types of risks such as credit risk, operation risk and market risk. Make sure to give the correct and accurate answers only.
 Use the following  context (delimited by <ctx></ctx>), and the chat history (delimited by <hs></hs>) to answer the question:
-------
+"""+"""------
 <ctx>
 {context}
 </ctx>
