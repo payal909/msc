@@ -175,23 +175,26 @@ def analyze():
             else:
                 updated_analysis("Based on the answers of the above question the institude comes under BCAR Short Form Category")
             session.input_disabled = False
+
     schedules = pd.read_csv("schedules.csv",delimiter="|")
     schedules = list(schedules[schedules[session.institute_type]=="TRUE"]["Schedule Number - Schedules"])
     limited_schedules = sum(f"{i+1}) {schedules[i]}\n" for i in range(len(schedules)))
-    st.chat_message("assistant").write(limited_schedules)
+    st.chat_message("assistant").write(f"According to the information provided the Institute belongs to {session.institute_type} category and thus the required schedules are limited to:\n\n{limited_schedules}")
 
 with st.sidebar:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
     for message in session.analysis:
-        st.write(message)
+        st.write(message)                                                              
 
 
 user_input = st.chat_input("Query",disabled=session.input_disabled)
 
 bcar_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Basel Capital Adequacy Reporting (BCAR) 2023 (2)_index")
 schedules_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_index")
+# schedules_csv_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_csv_index")
 
 bcar_db.merge_from(schedules_db)
+# bcar_db.merge_from(schedules_csv_db)
 
 chat_template = f"""
 You are virtual assistant of OSFI. You have to help the user working for {institute}. Your job is to help the user file the BCAR {session.institute_type} by providing the list of schedules, 
