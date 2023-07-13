@@ -123,7 +123,7 @@ def analyze():
             elif q1_ans.startswith("No"):
                 for qs in q1n_list:
                     qs_ans = get_answer(qs)
-                    updated_analysis(f"{2+q1y_list.index(qs)}) {qs}: {qs_ans}")    
+                    updated_analysis(f"{2+q1n_list.index(qs)}) {qs}: {qs_ans}")    
                     if qs_ans.startswith("No"):
                         possibly_cat3 = True
                         break
@@ -137,7 +137,7 @@ def analyze():
                 if q2_ans.startswith("Yes"):
                     for qs in q2y_list:
                         qs_ans = get_answer(qs)
-                        updated_analysis(f"{2+q1y_list.index(qs)}) {qs}: {qs_ans}")    
+                        updated_analysis(f"{2+q2y_list.index(qs)}) {qs}: {qs_ans}")    
                         if qs_ans.startswith("Yes"):
                             updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
                             session.institute_type = "Full Form"
