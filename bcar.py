@@ -75,7 +75,11 @@ os.environ["OPENAI_API_BASE"] = "https://testavinx.openai.azure.com/"
 
 # llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.1)
 llm = AzureChatOpenAI(deployment_name="gpt-35-turbo",model_name="gpt-35-turbo")
-embeddings = OpenAIEmbeddings(deployment="embedding1",model="text-embedding-ada-002",chunk_size =1)
+embeddings = OpenAIEmbeddings(deployment="embedding1",
+model="text-embedding-ada-002",
+openai_api_base="https://testavinx.openai.azure.com/",
+openai_api_type="azure",
+chunk_size = 1)
 
 template = """
 You are a helpful virtual assistant of OSFI. Analyze the context and answer the question in "Yes" or "No" only. Remember the
