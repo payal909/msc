@@ -25,6 +25,31 @@ import streamlit as st
 # from langchain.document_loaders import UnstructuredPDFLoader
 # _ = load_dotenv(find_dotenv())
 
+st.set_page_config(layout="wide")
+
+hide = '''
+<style>
+MainMenu {visibility:hidden;}
+header {visibility:hidden;}
+footer {visibility:hidden;}
+.css-1b9x38r {
+    display: none;
+    }
+    
+.css-1cypcdb {
+    min-width: 500px;
+    max-width: 500px;
+}
+.css-1544g2n {
+    padding: 1rem 1rem 1.5rem;
+}
+div.block-container {
+    padding-top: 0rem;
+    }
+</style>
+'''
+st.markdown(hide, unsafe_allow_html=True)
+
 
 session = st.session_state
 if 'transcript' not in session:
