@@ -210,8 +210,9 @@ def analyze():
 
 with st.sidebar:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
-    for message in session.analysis:
-        st.write(message)                                                              
+    st.write(session.analysis)
+    # for message in session.analysis:
+    #     st.write(message)                                                              
 
 
 user_input = st.chat_input("Query",disabled=session.input_disabled)
