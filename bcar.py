@@ -201,7 +201,7 @@ def analyze():
     limited_schedules = schedules[schedules[session.institute_type]][["Schedule Number","Schedules"]]
     # limited_schedules = "\n".join([f"{i+1}) {limited_schedules[i]}\n" for i in range(len(limited_schedules))])
     session.transcript.append(f"According to the information provided the Institute belongs to {session.institute_type} category and thus the required schedules are limited to:")
-    session.transcript.append(limited_schedules)
+    session.transcript.append(limited_schedules)of 
 
 with st.sidebar:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
