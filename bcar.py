@@ -113,7 +113,7 @@ with st.sidebar:
     institute = st.selectbox(label="Institute",options=institute_names)
     bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
     bcar_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Basel Capital Adequacy Reporting (BCAR) 2023 (2)_index")
-    # schedules_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_index")
+    schedules_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_index")
     intermediate_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_csv_index")
     # intermediate_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="intermediate_index")
 
@@ -303,6 +303,9 @@ chat_agent = RetrievalQA.from_chain_type(llm = llm,
             input_key="question"),
     })
 
+bcar_db.merge_from(bank_db)
+bcar_db.merge_from(schedules_db)
+bcar_db.merge_from(intermediate_db)
 
 if user_input:
     session.transcript.append(["user",user_input])
