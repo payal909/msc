@@ -307,7 +307,7 @@ chat_agent = RetrievalQA.from_chain_type(llm = llm,
 if user_input:
     session.transcript.append(["user",user_input])
     # bot_output = compare_answer(user_input,docs)
-    bot_output = chat_agent(user_input)
+    bot_output = chat_agent.run(user_input)
     session.transcript.append(["assistant",bot_output])
 
 if len(session.transcript)>0:
