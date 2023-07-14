@@ -80,10 +80,10 @@ if 'analyze_disabled' not in session:
 if 'institute_type' not in session:
     session.institute_type = "Full Form"
 
-os.environ["OPENAI_API_TYPE"] ="azure"
-os.environ["OPENAI_API_VERSION"] ="2023-05-15"
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
-os.environ["OPENAI_API_BASE"] = "https://testavinx.openai.azure.com/"
+# os.environ["OPENAI_API_TYPE"] ="azure"
+# os.environ["OPENAI_API_VERSION"] ="2023-05-15"
+# os.environ["OPENAI_API_BASE"] = "https://testavinx.openai.azure.com/"
 
 llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.1)
 embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
