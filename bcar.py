@@ -240,7 +240,7 @@ def compare_answer(question,docs):
 
     compare_context = "\n\n".join([f"Relevant points from {doc_name}:\n\n{doc_summary}" for doc_name,doc_summary in summary.items()])
 
-    st.write(compare_context)
+    st.write(summary)
 
     compare_template = f"""You are a helpful chatbot who has to answer question of a user from the institute {institute} which comes under the BCAR {session.institute_type} section.
     You will be given relevant points from various documents that will help you answer the user question.
@@ -262,7 +262,7 @@ def compare_answer(question,docs):
 
     compare_agent = RetrievalQA.from_chain_type(llm = llm,
             chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
-            retriever=bcar_db.as_retriever(),
+            retriever=bank_db.as_retriever(),
             verbose=False,
             chain_type_kwargs={
             "verbose":True,
