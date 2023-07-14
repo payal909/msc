@@ -112,15 +112,15 @@ institute_names = {"Bank of Montreal":"bmo_ar2022 (2)_index","Versa Bank":"VBAR_
 with st.sidebar:
     institute = st.selectbox(label="Institute",options=institute_names)
 
-    bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
-    bcar_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Basel Capital Adequacy Reporting (BCAR) 2023 (2)_index")
-    schedules_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_index")
-    # schedules_csv_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_csv_index")
-    # intermediate_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="intermediate_index")
+bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
+bcar_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Basel Capital Adequacy Reporting (BCAR) 2023 (2)_index")
+schedules_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_index")
+# schedules_csv_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_csv_index")
+# intermediate_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="intermediate_index")
 
-    bcar_qa = RetrievalQA.from_chain_type(llm=llm, retriever=bcar_db.as_retriever(), verbose=True)
-    bank_qa = RetrievalQA.from_chain_type(llm=llm, retriever=bank_db.as_retriever(), verbose=True)
-    schedules_qa = RetrievalQA.from_chain_type(llm=llm, retriever=schedules_db.as_retriever(), verbose=True)
+# bcar_qa = RetrievalQA.from_chain_type(llm=llm, retriever=bcar_db.as_retriever(), verbose=True)
+# bank_qa = RetrievalQA.from_chain_type(llm=llm, retriever=bank_db.as_retriever(), verbose=True)
+# schedules_qa = RetrievalQA.from_chain_type(llm=llm, retriever=schedules_db.as_retriever(), verbose=True)
 
 def get_answer(question):
     agent = RetrievalQA.from_chain_type(llm = llm,
@@ -279,65 +279,64 @@ user_input = st.chat_input("Query",disabled=session.input_disabled)
 #     return response
 
 
-# bcar_db.merge_from(bank_db)
-# bcar_db.merge_from(schedules_db)
-# bcar_db.merge_from(intermediate_db)
+bcar_db.merge_from(bank_db)
+bcar_db.merge_from(schedules_db)
 
-# chat_template = f"""
-# You are virtual assistant of OSFI. You have to help the user working for {institute}. Your job is to help the user file the BCAR {session.institute_type} by providing the list of schedules, 
-# for various types of risks such as credit risk, operation risk and market risk. Make sure to give the correct and accurate answers only.
-# Use the following  context (delimited by <ctx></ctx>), and the chat history (delimited by <hs></hs>) to answer the question:
-# """+"""------
-# <ctx>
-# {context}
-# </ctx>
-# ------
-# <hs>
-# {history}
-# </hs>
-# ------
-# {question}
-# Answer:
-# """
-# chat_prompt = PromptTemplate(input_variables=["history", "context", "question"],template=chat_template)
+chat_template = f"""
+You are virtual assistant of OSFI. You have to help the user working for {institute}. Your job is to help the user file the BCAR {session.institute_type} by providing the list of schedules, 
+for various types of risks such as credit risk, operation risk and market risk. Make sure to give the correct and accurate answers only.
+Use the following  context (delimited by <ctx></ctx>), and the chat history (delimited by <hs></hs>) to answer the question:
+"""+"""------
+<ctx>
+{context}
+</ctx>
+------
+<hs>
+{history}
+</hs>
+------
+{question}
+Answer:
+"""
+chat_prompt = PromptTemplate(input_variables=["history", "context", "question"],template=chat_template)
 
-# chat_agent = RetrievalQA.from_chain_type(llm = llm,
-#         chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
-#         retriever=bcar_db.as_retriever(),
-#         verbose=False,
-#         chain_type_kwargs={
-#         "verbose":True,
-#         "prompt": chat_prompt,
-#         "memory": ConversationBufferMemory(
-#             input_key="question"),
-#     })
+chat_agent = RetrievalQA.from_chain_type(llm = llm,
+        chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
+        retriever=bcar_db.as_retriever(),
+        verbose=False,
+        chain_type_kwargs={
+        "verbose":True,
+        "prompt": chat_prompt,
+        "memory": ConversationBufferMemory(
+            input_key="question"),
+    })
 
-tools = [
-    Tool(
-        name = "BCAR",
-        func=bcar_qa.run,
-        description="useful for when you need to find answer regarding bcar different categories and schedules"
-    ),
-    Tool(
-        name=f"{institute} Annual Report",
-        func=bank_qa.run,
-        description=f"useful for when you need to find details about {institute} like category it follows, fiscal year end etc"
-    ),
-    Tool(
-        name="Summary of Schedules",
-        func = schedules_qa.run,
-        description="Useful to get summaries of schedules"
-    )
-]
+# tools = [
+#     Tool(
+#         name = "BCAR",
+#         func=bcar_qa.run,
+#         description="useful for when you need to find answer regarding bcar different categories and schedules"
+#     ),
+#     Tool(
+#         name=f"{institute} Annual Report",
+#         func=bank_qa.run,
+#         description=f"useful for when you need to find details about {institute} like category it follows, fiscal year end etc"
+#     ),
+#     Tool(
+#         name="Summary of Schedules",
+#         func = schedules_qa.run,
+#         description="Useful to get summaries of schedules"
+#     )
+# ]
 
-planner = load_chat_planner(llm)
-executor = load_agent_executor(llm, tools, verbose=True)
-planner_agent = PlanAndExecute(planner=planner, executor=executor, verbose=True)
+# planner = load_chat_planner(llm)
+# executor = load_agent_executor(llm, tools, verbose=True)
+# planner_agent = PlanAndExecute(planner=planner, executor=executor, verbose=True)
 
 if user_input:
     session.transcript.append(["user",user_input])
     # bot_output = compare_answer(user_input,docs)
-    bot_output = planner_agent.run(user_input)
+    bot_output = chat_agent.run(user_input)
     session.transcript.append(["assistant",bot_output])
 
 if len(session.transcript)>0:
