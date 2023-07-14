@@ -210,9 +210,14 @@ def analyze():
 
 with st.sidebar:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
-    st.write("\n".join(session.analysis))
-    # for message in session.analysis:
-    #     st.write(message)                                                              
+    for message in session.analysis:
+        st.write(message)                                                              
+
+analysis_text = "\n\n".join(session.analysis)+"\n\n"+session.transcript[0]+"\n\n"+session.transcript[0].to_markdown()
+with st.expander("analysis"):
+    st.write(analysis_text)
+analysis_db = FAISS.from_texts([analysis_text],embeddings)
+
 
 
 user_input = st.chat_input("Query",disabled=session.input_disabled)
@@ -281,7 +286,7 @@ user_input = st.chat_input("Query",disabled=session.input_disabled)
 
 
 bcar_db.merge_from(bank_db)
-# bcar_db.merge_from(schedules_db)
+bcar_db.merge_from(analysis_db)
 
 chat_template = f"""
 You are virtual assistant of OSFI. You have to help the user working for {institute}. Your job is to help the user file the BCAR {session.institute_type} by providing the list of schedules, 
