@@ -214,8 +214,7 @@ user_input = st.chat_input("Query",disabled=session.input_disabled)
 docs = {"Basel Capital Adequacy Reporting (BCAR)": bcar_db,f"{institute} Annual Report":bank_db}
 
 def compare_answer(question,docs):
-    retrival_template = """You are a helpful assistant who provides all the point from the context that might be necessary to answer the following question "{question}".
-    Do not try to answer the question just provide the necessary or relevant point required to answer the question.
+    retrival_template = """You are a helpful assistant, provide all the point from the context related to answer the following question "{question}".
     Use the following context (delimited by <ctx></ctx>) for finding out the necessary point:
 
     <ctx>
