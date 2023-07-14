@@ -210,7 +210,7 @@ def analyze():
 
 with st.sidebar:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
-    st.write(session.analysis)
+    st.write("\n".join(session.analysis))
     # for message in session.analysis:
     #     st.write(message)                                                              
 
