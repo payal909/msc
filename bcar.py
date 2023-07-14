@@ -26,17 +26,17 @@ import pandas as pd
 # from langchain.document_loaders import UnstructuredPDFLoader
 # _ = load_dotenv(find_dotenv())
 
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    SystemMessagePromptTemplate,
-    AIMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
-from langchain.schema import (
-    AIMessage,
-    HumanMessage,
-    SystemMessage
-)
+# from langchain.prompts.chat import (
+#     ChatPromptTemplate,
+#     SystemMessagePromptTemplate,
+#     AIMessagePromptTemplate,
+#     HumanMessagePromptTemplate,
+# )
+# from langchain.schema import (
+#     AIMessage,
+#     HumanMessage,
+#     SystemMessage
+# )
 
 st.set_page_config(layout="wide")
 
@@ -114,6 +114,10 @@ institute_names = {"Bank of Montreal":"bmo_ar2022 (2)_index","Versa Bank":"VBAR_
 with st.sidebar:
     institute = st.selectbox(label="Institute",options=institute_names)
     bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
+    bcar_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Basel Capital Adequacy Reporting (BCAR) 2023 (2)_index")
+    # schedules_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_index")
+    # schedules_csv_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_csv_index")
+    # intermediate_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="intermediate_index")
 
 def get_answer(question):
     agent = RetrievalQA.from_chain_type(llm = llm,
@@ -128,9 +132,93 @@ def get_answer(question):
     })
     return agent.run(question)
 
-def compare_and_answer(question,docs):
+q1 = f"Does {institute} have a parent company?"
+q1y_list = [
+    f"Is {institute}'s parent an operating company regulated by OSFI?",
+    f"Has {institute}'s parent adopted an internal rating (IRB) approach to credit risk?",
+    f"Is {institute} a fully- consolidated subsidiary?",
+    f"Does {institute} have at least 95% of its credit risk exposures captured under the IRB approach?"
+    ]
+q1n_list = [
+    f"Has {institute} adopted an internal rating (IRB) approach to credit risk?",
+    f"Is {institute} a fully- consolidated subsidiary?",
+    f"Does {institute} have at least 95% of its credit risk exposures captured under the IRB approach?"
+    ]
+q2 = f"Is {institute} reporting less than $10 billion in total assets?"
+q2y_list = [
+    f"Is {institute} reporting greater than $100 million in total loans?",
+    f"Does {institute} have an interest rate or foreign exchange derivatives with a combined notional amount greater than 100% of total capital?",
+    f"Does {institute} have any other types of derivative exposure?",
+    f"Does {institute} have exposure to other off-balance sheet items greater than 100% of total capital?"
+    ]
+    
+
+def analyze():
+    with st.sidebar:
+        with st.spinner(f"Checking if {institute} belongs to BCAR Short Form Category"):
+            session.analyze_disabled = True
+            session.analysis.append("The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to you need to answer a series of questions.")
+            q1_ans = get_answer(q1)
+            session.analysis.append(f"1) {q1} {q1_ans}")
+            session.institute_type = "Short Form"
+            possibly_cat3 = False
+            if q1_ans.startswith("Yes"):
+                for qs in q1y_list:
+                    qs_ans = get_answer(qs)
+                    session.analysis.append(f"{2+q1y_list.index(qs)}) {qs} {qs_ans}")    
+                    if qs_ans.startswith("No"):
+                        possibly_cat3 = True
+                        break
+            elif q1_ans.startswith("No"):
+                for qs in q1n_list:
+                    qs_ans = get_answer(qs)
+                    session.analysis.append(f"{2+q1n_list.index(qs)}) {qs} {qs_ans}")    
+                    if qs_ans.startswith("No"):
+                        possibly_cat3 = True
+                        break
+    with st.sidebar:
+        with st.spinner(f"Checking if {institute} belongs to BCAR Category III Category"):
+            if possibly_cat3:
+                session.analysis.append("Based on the answers of the above question the institude does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III")
+                session.institute_type = "Category 3"
+                q2_ans = get_answer(q2)
+                session.analysis.append(f"1) {q2} {q2_ans}")    
+                if q2_ans.startswith("Yes"):
+                    for qs in q2y_list:
+                        qs_ans = get_answer(qs)
+                        session.analysis.append(f"{2+q2y_list.index(qs)}) {qs} {qs_ans}")    
+                        if qs_ans.startswith("Yes"):
+                            session.analysis.append("Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
+                            session.institute_type = "Full Form"
+                            break
+                        session.analysis.append("Based on the answers of the above question the institude comes under BCAR Category III")
+                else:
+                    session.analysis.append("Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
+                    session.institute_type = "Full Form"
+            else:
+                session.analysis.append("Based on the answers of the above question the institude comes under BCAR Short Form Category")
+            session.input_disabled = False
+
+    schedules = pd.read_csv("schedules.csv",delimiter="|")
+    limited_schedules = schedules[schedules[session.institute_type]][["Schedule Number","Schedules"]]
+    # limited_schedules = "\n".join([f"{i+1}) {limited_schedules[i]}\n" for i in range(len(limited_schedules))])
+    session.transcript.append(f"According to the information provided the Institute belongs to {session.institute_type} category and thus the required schedules are limited to:")
+    session.transcript.append(limited_schedules)
+
+with st.sidebar:
+    analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
+    for message in session.analysis:
+        st.write(message)                                                              
+
+
+user_input = st.chat_input("Query",disabled=session.input_disabled)
+
+docs = {"Basel Capital Adequacy Reporting (BCAR)": bcar_db,f"{institute} Annual Report":bank_db}
+
+def compare_answer(question,docs):
     retrival_template = """You are a helpful assistant who provides all the point from the context that might be necessary to answer the following question "{question}".
-    Do not try to answer the question just provide the necessary or relevant point required to answer the question. 
+    Do not try to answer the question just provide the necessary or relevant point required to answer the question.
+    Be concise while getting the relevant points from each document.
     Use the following context (delimited by <ctx></ctx>) for finding out the necessary point:
 
     <ctx>
@@ -154,152 +242,73 @@ def compare_and_answer(question,docs):
         })
         summary[doc_name] = agent.run(question)
 
-    context = "\n\n".join([f"Relevant points from {doc_name}:\n\n{doc_summary}" for doc_name,doc_summary in summary.items()])
+    compare_context = "\n\n".join([f"Relevant points from {doc_name}:\n\n{doc_summary}" for doc_name,doc_summary in summary.items()])
 
-    summarize_template = """You are a helpful chatbot who has to answer question of a user from the institute {institute} which comes under the BCAR {institute_type} section.
+    compare_template = f"""You are a helpful chatbot who has to answer question of a user from the institute {institute} which comes under the BCAR {session.institute_type} section.
     You will be given relevant points from various documents that will help you answer the user question.
     Below is a list of relevant points along with the name of the document from where thoes points are from.
     Consider all the documents provided to you and answer the question by choosing all the relevant points to the question.
     You might have to compare points from more than one document to answer the question.
 
-    {context}"""
-
-    system_template = PromptTemplate(template=summarize_template,input_variables=["institute","institute_type","context"])
-    system_message_prompt = SystemMessagePromptTemplate(prompt=system_template)
+    {compare_context}"""+"""Here is context from additional documents (delimited by <ctx></ctx>)
     
-    messages_prompt = [system_message_prompt]
-    messages_prompt.append(HumanMessage(content=question))
-    chat_prompt = ChatPromptTemplate.from_messages(messages_prompt)
+    <ctx>
+    {context}
+    </ctx>
 
-    response = llm(chat_prompt.format_prompt(Institute=institute,institute_type=session.institute_type,context=context).to_messages()).content
+    Question: {question}
 
+    Answer:"""
+
+    compare_prompt = PromptTemplate(input_variables=["question", "context"],template=compare_template)
+
+    compare_agent = RetrievalQA.from_chain_type(llm = llm,
+            chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
+            retriever=bcar_db.as_retriever(),
+            verbose=False,
+            chain_type_kwargs={
+            "verbose":True,
+            "prompt": compare_prompt,
+            "memory": ConversationBufferMemory(
+                input_key="question"),
+        })
+    response = compare_agent.run(question)
     return response
 
-q1 = f"Does {institute} have a parent company?"
-q1y_list = [
-    f"Is {institute}'s parent an operating company regulated by OSFI?",
-    f"Has {institute}'s parent adopted an internal rating (IRB) approach to credit risk?",
-    f"Is {institute} a fully- consolidated subsidiary?",
-    f"Does {institute} have at least 95% of its credit risk exposures captured under the IRB approach?"
-    ]
-q1n_list = [
-    f"Has {institute} adopted an internal rating (IRB) approach to credit risk?",
-    f"Is {institute} a fully- consolidated subsidiary?",
-    f"Does {institute} have at least 95% of its credit risk exposures captured under the IRB approach?"
-    ]
-q2 = f"Is {institute} reporting less than $10 billion in total assets?"
-q2y_list = [
-    f"Is {institute} reporting greater than $100 million in total loans?",
-    f"Does {institute} have an interest rate or foreign exchange derivatives with a combined notional amount greater than 100% of total capital?",
-    f"Does {institute} have any other types of derivative exposure?",
-    f"Does {institute} have exposure to other off-balance sheet items greater than 100% of total capital?"
-    ]
-    
-def updated_analysis(message):
-    session.analysis.append(message)
 
-def analyze():
-    with st.sidebar:
-        with st.spinner(f"Checking if {institute} belongs to BCAR Short Form Category"):
-            session.analyze_disabled = True
-            updated_analysis("The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to you need to answer a series of questions.")
-            q1_ans = get_answer(q1)
-            updated_analysis(f"1) {q1} {q1_ans}")
-            session.institute_type = "Short Form"
-            possibly_cat3 = False
-            if q1_ans.startswith("Yes"):
-                for qs in q1y_list:
-                    qs_ans = get_answer(qs)
-                    updated_analysis(f"{2+q1y_list.index(qs)}) {qs} {qs_ans}")    
-                    if qs_ans.startswith("No"):
-                        possibly_cat3 = True
-                        break
-            elif q1_ans.startswith("No"):
-                for qs in q1n_list:
-                    qs_ans = get_answer(qs)
-                    updated_analysis(f"{2+q1n_list.index(qs)}) {qs} {qs_ans}")    
-                    if qs_ans.startswith("No"):
-                        possibly_cat3 = True
-                        break
-    with st.sidebar:
-        with st.spinner(f"Checking if {institute} belongs to BCAR Category III Category"):
-            if possibly_cat3:
-                updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III")
-                session.institute_type = "Category 3"
-                q2_ans = get_answer(q2)
-                updated_analysis(f"1) {q2} {q2_ans}")    
-                if q2_ans.startswith("Yes"):
-                    for qs in q2y_list:
-                        qs_ans = get_answer(qs)
-                        updated_analysis(f"{2+q2y_list.index(qs)}) {qs} {qs_ans}")    
-                        if qs_ans.startswith("Yes"):
-                            updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
-                            session.institute_type = "Full Form"
-                            break
-                        updated_analysis("Based on the answers of the above question the institude comes under BCAR Category III")
-                else:
-                    updated_analysis("Based on the answers of the above question the institude does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
-                    session.institute_type = "Full Form"
-            else:
-                updated_analysis("Based on the answers of the above question the institude comes under BCAR Short Form Category")
-            session.input_disabled = False
+# chat_template = f"""
+# You are virtual assistant of OSFI. You have to help the user working for {institute}. Your job is to help the user file the BCAR {session.institute_type} by providing the list of schedules, 
+# for various types of risks such as credit risk, operation risk and market risk. Make sure to give the correct and accurate answers only.
+# Use the following  context (delimited by <ctx></ctx>), and the chat history (delimited by <hs></hs>) to answer the question:
+# """+"""------
+# <ctx>
+# {context}
+# </ctx>
+# ------
+# <hs>
+# {history}
+# </hs>
+# ------
+# {question}
+# Answer:
+# """
+# chat_prompt = PromptTemplate(input_variables=["history", "context", "question"],template=chat_template)
 
-    schedules = pd.read_csv("schedules.csv",delimiter="|")
-    limited_schedules = schedules[schedules[session.institute_type]][["Schedule Number","Schedules"]]
-    # limited_schedules = "\n".join([f"{i+1}) {limited_schedules[i]}\n" for i in range(len(limited_schedules))])
-    session.transcript.append(f"According to the information provided the Institute belongs to {session.institute_type} category and thus the required schedules are limited to:")
-    session.transcript.append(limited_schedules)
-
-with st.sidebar:
-    analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyze)
-    for message in session.analysis:
-        st.write(message)                                                              
-
-
-user_input = st.chat_input("Query",disabled=session.input_disabled)
-
-bcar_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Basel Capital Adequacy Reporting (BCAR) 2023 (2)_index")
-schedules_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_index")
-schedules_csv_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name="Schedules_csv_index")
-bank_info_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institute_names[institute])
-
-bcar_db.merge_from(schedules_db)
-bcar_db.merge_from(schedules_csv_db)
-bcar_db.merge_from(bank_info_db)
-
-chat_template = f"""
-You are virtual assistant of OSFI. You have to help the user working for {institute}. Your job is to help the user file the BCAR {session.institute_type} by providing the list of schedules, 
-for various types of risks such as credit risk, operation risk and market risk. Make sure to give the correct and accurate answers only.
-Use the following  context (delimited by <ctx></ctx>), and the chat history (delimited by <hs></hs>) to answer the question:
-"""+"""------
-<ctx>
-{context}
-</ctx>
-------
-<hs>
-{history}
-</hs>
-------
-{question}
-Answer:
-"""
-chat_prompt = PromptTemplate(input_variables=["history", "context", "question"],template=chat_template)
-
-chat_agent = RetrievalQA.from_chain_type(llm = llm,
-        chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
-        retriever=bcar_db.as_retriever(),
-        verbose=False,
-        chain_type_kwargs={
-        "verbose":True,
-        "prompt": chat_prompt,
-        "memory": ConversationBufferMemory(
-            input_key="question"),
-    })
+# chat_agent = RetrievalQA.from_chain_type(llm = llm,
+#         chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
+#         retriever=bcar_db.as_retriever(),
+#         verbose=False,
+#         chain_type_kwargs={
+#         "verbose":True,
+#         "prompt": chat_prompt,
+#         "memory": ConversationBufferMemory(
+#             input_key="question"),
+#     })
 
 
 if user_input:
     session.transcript.append(["user",user_input])
-    bot_output = chat_agent.run(user_input)
+    bot_output = compare_answer(user_input,docs)
     session.transcript.append(["assistant",bot_output])
 
 if len(session.transcript)>0:
