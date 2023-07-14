@@ -130,7 +130,7 @@ def get_answer(question):
 
 def compare_and_answer(question,docs):
     retrival_template = """You are a helpful assistant who provides all the point from the context that might be necessary to answer the following question "{question}".
-    Do not try to answer the question just provide the necessary or relevant point to the question. 
+    Do not try to answer the question just provide the necessary or relevant point required to answer the question. 
     Use the following context (delimited by <ctx></ctx>) for finding out the necessary point:
 
     <ctx>
@@ -156,15 +156,15 @@ def compare_and_answer(question,docs):
 
     context = "\n\n".join([f"Relevant points from {doc_name}:\n\n{doc_summary}" for doc_name,doc_summary in summary.items()])
 
-    summarizre_template = """You are a helpful chatbot who has to answer question of a user from the institute {institute} which comes under the BCAR {institute_type} section.
+    summarize_template = """You are a helpful chatbot who has to answer question of a user from the institute {institute} which comes under the BCAR {institute_type} section.
     You will be given relevant points from various documents that will help you answer the user question.
     Below is a list of relevant points along with the name of the document from where thoes points are from.
     Consider all the documents provided to you and answer the question by choosing all the relevant points to the question.
-    You might have to compare more points from more than one document to answer the question.
+    You might have to compare points from more than one document to answer the question.
 
     {context}"""
 
-    system_template = PromptTemplate(template=summarizre_template,input_variables=["institute","institute_type","context"])
+    system_template = PromptTemplate(template=summarize_template,input_variables=["institute","institute_type","context"])
     system_message_prompt = SystemMessagePromptTemplate(prompt=system_template)
     
     messages_prompt = [system_message_prompt]
