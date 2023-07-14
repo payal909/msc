@@ -240,7 +240,7 @@ def compare_answer(question,docs):
 
     compare_context = "\n\n".join([f"Relevant points from {doc_name}:\n\n{doc_summary}" for doc_name,doc_summary in summary.items()])
 
-    st.write(summary)
+    # st.write(summary)
 
     compare_template = f"""You are a helpful chatbot who has to answer question of a user from the institute {institute} which comes under the BCAR {session.institute_type} section.
     You will be given relevant points from various documents that will help you answer the user question.
@@ -274,39 +274,40 @@ def compare_answer(question,docs):
     return response
 
 
-# chat_template = f"""
-# You are virtual assistant of OSFI. You have to help the user working for {institute}. Your job is to help the user file the BCAR {session.institute_type} by providing the list of schedules, 
-# for various types of risks such as credit risk, operation risk and market risk. Make sure to give the correct and accurate answers only.
-# Use the following  context (delimited by <ctx></ctx>), and the chat history (delimited by <hs></hs>) to answer the question:
-# """+"""------
-# <ctx>
-# {context}
-# </ctx>
-# ------
-# <hs>
-# {history}
-# </hs>
-# ------
-# {question}
-# Answer:
-# """
-# chat_prompt = PromptTemplate(input_variables=["history", "context", "question"],template=chat_template)
+chat_template = f"""
+You are virtual assistant of OSFI. You have to help the user working for {institute}. Your job is to help the user file the BCAR {session.institute_type} by providing the list of schedules, 
+for various types of risks such as credit risk, operation risk and market risk. Make sure to give the correct and accurate answers only.
+Use the following  context (delimited by <ctx></ctx>), and the chat history (delimited by <hs></hs>) to answer the question:
+"""+"""------
+<ctx>
+{context}
+</ctx>
+------
+<hs>
+{history}
+</hs>
+------
+{question}
+Answer:
+"""
+chat_prompt = PromptTemplate(input_variables=["history", "context", "question"],template=chat_template)
 
-# chat_agent = RetrievalQA.from_chain_type(llm = llm,
-#         chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
-#         retriever=bcar_db.as_retriever(),
-#         verbose=False,
-#         chain_type_kwargs={
-#         "verbose":True,
-#         "prompt": chat_prompt,
-#         "memory": ConversationBufferMemory(
-#             input_key="question"),
-#     })
+chat_agent = RetrievalQA.from_chain_type(llm = llm,
+        chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
+        retriever=bcar_db.as_retriever(),
+        verbose=False,
+        chain_type_kwargs={
+        "verbose":True,
+        "prompt": chat_prompt,
+        "memory": ConversationBufferMemory(
+            input_key="question"),
+    })
 
 
 if user_input:
     session.transcript.append(["user",user_input])
-    bot_output = compare_answer(user_input,docs)
+    # bot_output = compare_answer(user_input,docs)
+    bot_output = chat_agent(user_input)
     session.transcript.append(["assistant",bot_output])
 
 if len(session.transcript)>0:
