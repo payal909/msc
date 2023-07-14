@@ -280,7 +280,7 @@ user_input = st.chat_input("Query",disabled=session.input_disabled)
 
 
 bcar_db.merge_from(bank_db)
-bcar_db.merge_from(schedules_db)
+# bcar_db.merge_from(schedules_db)
 
 chat_template = f"""
 You are virtual assistant of OSFI. You have to help the user working for {institute}. Your job is to help the user file the BCAR {session.institute_type} by providing the list of schedules, 
