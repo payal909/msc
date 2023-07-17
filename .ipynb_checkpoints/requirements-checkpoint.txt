@@ -1,6 +1,5 @@
 pydantic==1.10.8
 langchain==0.0.228
-google-generativeai
 openai
 chromadb
 streamlit-chat
