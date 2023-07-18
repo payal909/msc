@@ -75,10 +75,10 @@ q2y_list = [
     f"Does {session.institute} have any other types of derivative exposure?",
     f"Does {session.institute} have exposure to other off-balance sheet items greater than 100% of total capital?"
     ]
-questions = [q1,q1y_list,q1n_list,q2,q2y_list]
+questions = (q1,q1y_list,q1n_list,q2,q2y_list)
 
 def analyse(): 
-    utils.analyse(session)
+    utils.analyse(questions,session)
 
 with st.sidebar:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyse)
