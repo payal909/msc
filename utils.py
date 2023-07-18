@@ -129,7 +129,6 @@ def get_answer(question):
     pass
 
 def analyse(questions,session):
-    pass
         # q1,q1y_list,q1n_list,q2,q2y_list = questions
         # with st.sidebar:
         #     with st.spinner(f"Checking if {session.institute} belongs to BCAR Short Form Category"):
@@ -174,7 +173,7 @@ def analyse(questions,session):
         #                 session.institute_type = "Full Form"
         #         else:
         #             session.analysis.append(f"Based on the answers of the above question {session.institute} comes under BCAR Short Form Category")
-        #         session.input_disabled = False
+                session.input_disabled = False
 
     # schedules = pd.read_csv("schedules.csv",delimiter="|")
     # limited_schedules = schedules[schedules[session.institute_type]][["Schedule Number","Schedules"]]
