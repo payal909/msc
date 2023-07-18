@@ -19,6 +19,7 @@ from langchain import PromptTemplate
 # from langchain.chains.router import MultiRetrievalQAChain
 import streamlit as st
 import pandas as pd
+from tqdm import tqdm
 # from langchain.document_loaders import UnstructuredPDFLoader
 
 from langchain.prompts.chat import (
