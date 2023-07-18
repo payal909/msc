@@ -16,7 +16,8 @@ session = st.session_state
 if 'transcript' not in session:
     session.transcript = []
 
-os.environ["ANTHROPIC_API_KEY"] = "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"
+# os.environ["ANTHROPIC_API_KEY"] = "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"
+os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
 claude_models = ["claude-instant-1","claude-2"]
 llm = ChatAnthropic(model=claude_models[1],temperature= 0)
 
