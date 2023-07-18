@@ -83,6 +83,9 @@ questions = [q1,q1y_list,q1n_list,q2,q2y_list]
 #     for message in session.analysis:
 #         st.write(message) 
 
+
+user_input = st.chat_input("Query",disabled=session.input_disabled)
+
 if user_input:
     session.transcript.append(["user",user_input])
     response = utils.compare_answer(user_input,docs)
