@@ -4,7 +4,7 @@ from langchain.llms import GooglePalm
 from langchain.vectorstores import FAISS
 from langchain.embeddings import GooglePalmEmbeddings
 from langchain.chains import RetrievalQA
-from langchain.chat_models import ChatOpenAI, AzureChatOpenAI
+from langchain.chat_models import ChatOpenAI, AzureChatOpenAI, ChatAnthropic
 from langchain.llms import AzureOpenAI
 from langchain.document_loaders import DirectoryLoader,PyPDFLoader
 from langchain.document_loaders import UnstructuredExcelLoader
