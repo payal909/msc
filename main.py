@@ -103,49 +103,49 @@ def get_answer(question):
     return "Yes"
 
 def analyse():
-        with st.sidebar:
-            with st.spinner(f"Checking if {session.institute} belongs to BCAR Short Form Category"):
-                session.analyze_disabled = True
-                session.analysis.append("The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to, you need to answer a series of questions.")
-                q1_ans = get_answer(q1)
-                session.analysis.append(f"1) {q1} {q1_ans}")
-                session.institute_type = "Short Form"
-                possibly_cat3 = False
-                if q1_ans.startswith("Yes"):
-                    for qs in q1y_list:
+    with st.sidebar:
+        with st.spinner(f"Checking if {session.institute} belongs to BCAR Short Form Category"):
+            session.analyze_disabled = True
+            session.analysis.append("The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to, you need to answer a series of questions.")
+            q1_ans = get_answer(q1)
+            session.analysis.append(f"1) {q1} {q1_ans}")
+            session.institute_type = "Short Form"
+            possibly_cat3 = False
+            if q1_ans.startswith("Yes"):
+                for qs in q1y_list:
+                    qs_ans = get_answer(qs)
+                    session.analysis.append(f"{2+q1y_list.index(qs)}) {qs} {qs_ans}")    
+                    if qs_ans.startswith("No"):
+                        possibly_cat3 = True
+                        break
+            elif q1_ans.startswith("No"):
+                for qs in q1n_list:
+                    qs_ans = get_answer(qs)
+                    session.analysis.append(f"{2+q1n_list.index(qs)}) {qs} {qs_ans}")    
+                    if qs_ans.startswith("No"):
+                        possibly_cat3 = True
+                        break
+    with st.sidebar:
+        with st.spinner(f"Checking if {session.institute} belongs to BCAR Category III Category"):
+            if possibly_cat3:
+                session.analysis.append("Based on the answers of the above question the institude does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III")
+                session.institute_type = "Category 3"
+                q2_ans = get_answer(q2)
+                session.analysis.append(f"1) {q2} {q2_ans}")    
+                if q2_ans.startswith("Yes"):
+                    for qs in q2y_list:
                         qs_ans = get_answer(qs)
-                        session.analysis.append(f"{2+q1y_list.index(qs)}) {qs} {qs_ans}")    
-                        if qs_ans.startswith("No"):
-                            possibly_cat3 = True
+                        session.analysis.append(f"{2+q2y_list.index(qs)}) {qs} {qs_ans}")    
+                        if qs_ans.startswith("Yes"):
+                            session.analysis.append(f"Based on the answers of the above question {session.institute} does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
+                            session.institute_type = "Full Form"
                             break
-                elif q1_ans.startswith("No"):
-                    for qs in q1n_list:
-                        qs_ans = get_answer(qs)
-                        session.analysis.append(f"{2+q1n_list.index(qs)}) {qs} {qs_ans}")    
-                        if qs_ans.startswith("No"):
-                            possibly_cat3 = True
-                            break
-        with st.sidebar:
-            with st.spinner(f"Checking if {session.institute} belongs to BCAR Category III Category"):
-                if possibly_cat3:
-                    session.analysis.append("Based on the answers of the above question the institude does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III")
-                    session.institute_type = "Category 3"
-                    q2_ans = get_answer(q2)
-                    session.analysis.append(f"1) {q2} {q2_ans}")    
-                    if q2_ans.startswith("Yes"):
-                        for qs in q2y_list:
-                            qs_ans = get_answer(qs)
-                            session.analysis.append(f"{2+q2y_list.index(qs)}) {qs} {qs_ans}")    
-                            if qs_ans.startswith("Yes"):
-                                session.analysis.append(f"Based on the answers of the above question {session.institute} does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
-                                session.institute_type = "Full Form"
-                                break
-                            session.analysis.append(f"Based on the answers of the above question {session.institute} comes under BCAR Category III")
-                    else:
-                        session.analysis.append(f"Based on the answers of the above question {session.institute} does not come under BCAR Short Form or BCAR Category III so it belongs to Full BCAR Category")
-                        session.institute_type = "Full Form"
+                        session.analysis.append(f"Based on the answers of the above question {session.institute} comes under BCAR Category III")
                 else:
-                    session.analysis.append(f"Based on the answers of the above question {session.institute} comes under BCAR Short Form Category")
+                    session.analysis.append(f"Based on the answers of the above question {session.institute} does not come under BCAR Short Form or BCAR Category III so it belongs to Full BCAR Category")
+                    session.institute_type = "Full Form"
+            else:
+                session.analysis.append(f"Based on the answers of the above question {session.institute} comes under BCAR Short Form Category")
     session.input_disabled = False
         
 with st.sidebar:
