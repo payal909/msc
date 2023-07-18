@@ -124,9 +124,9 @@ Answer:
 
 def analyse(questions,session,llm,db):
     with st.sidebar:
-        with st.spinner(f"Checking if {institute} belongs to BCAR Short Form Category"):
+        with st.spinner(f"Checking if {session.institute} belongs to BCAR Short Form Category"):
             session.analyze_disabled = True
-            session.analysis.append("The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to you need to answer a series of questions.")
+            session.analysis.append(f"The first step is to figure out whether {session.institute} belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to, the following series of questions need to be answered.")
             q1_ans = get_answer(llm,db,q1)
             session.analysis.append(f"1) {q1} {q1_ans}")
             session.institute_type = "Short Form"
@@ -146,9 +146,9 @@ def analyse(questions,session,llm,db):
                         possibly_cat3 = True
                         break
     with st.sidebar:
-        with st.spinner(f"Checking if {institute} belongs to BCAR Category III Category"):
+        with st.spinner(f"Checking if {session.institute} belongs to BCAR Category III Category"):
             if possibly_cat3:
-                session.analysis.append("Based on the answers of the above question the institute does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III")
+                session.analysis.append(f"Based on the answers of the above questions {session.institute} does not come under BCAR Short Form Category. To determine if it comes under BCAR Category III the following series of questions need to be answered.")
                 session.institute_type = "Category 3"
                 q2_ans = get_answer(llm,db,q2)
                 session.analysis.append(f"1) {q2} {q2_ans}")    
@@ -157,21 +157,21 @@ def analyse(questions,session,llm,db):
                         qs_ans = get_answer(llm,db,qs)
                         session.analysis.append(f"{2+q2y_list.index(qs)}) {qs} {qs_ans}")    
                         if qs_ans.startswith("Yes"):
-                            session.analysis.append("Based on the answers of the above question the institute does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
+                            session.analysis.append(f"Based on the answers of the above questions {session.institute} does not come under BCAR Short Form or BCAR Category III so it belongs to Full BCAR Category")
                             session.institute_type = "Full Form"
                             break
-                        session.analysis.append("Based on the answers of the above question the institute comes under BCAR Category III")
+                        session.analysis.append(f"Based on the answers of the above questions {session.institute} comes under BCAR Category III")
                 else:
-                    session.analysis.append("Based on the answers of the above question the institute does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
+                    session.analysis.append(f"Based on the answers of the above questions {session.institute} does not come under BCAR Short Form or BCAR Category III so it belongs to Full BCAR Category")
                     session.institute_type = "Full Form"
             else:
-                session.analysis.append("Based on the answers of the above question the institute comes under BCAR Short Form Category")
+                session.analysis.append(f"Based on the answers of the above questions {session.institute} comes under BCAR Short Form Category")
             session.input_disabled = False
             
     schedules = pd.read_csv("schedules.csv",delimiter="|")
     limited_schedules = schedules[schedules[session.institute_type]][["Schedule Number","Schedules"]]
     # limited_schedules = "\n".join([f"{i+1}) {limited_schedules[i]}\n" for i in range(len(limited_schedules))])
-    session.transcript.append(f"According to the information provided the Institute belongs to {session.institute_type} category and thus the required schedules are limited to:")
+    session.transcript.append(f"According to the information provided {session.institute} belongs to {session.institute_type} category and thus the required schedules are limited to:")
     session.transcript.append(limited_schedules)
     
     # analysis_text = "\n\n".join(session.analysis)+"\n\n"+session.transcript[0]+"\n\n"+session.transcript[0].to_markdown()
