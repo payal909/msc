@@ -80,6 +80,8 @@ utils.setup_page()
 session = st.session_state
 utils.setup_session(session)
 
+embedding_llm, embeddings, chat_llm = utils.setup_llm()
+
 all_documents = {
     "BCAR"                              :   {"data":"./data/Basel Capital Adequacy Reporting (BCAR) 2023 (2).pdf","index":"Basel Capital Adequacy Reporting (BCAR) 2023 (2)_index"},
     "Bank of Montreal (BMO)"            :   {"data":"./data/bmo_ar2022 (2).pdf","index":"bmo_ar2022 (2)_index"},
