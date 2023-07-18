@@ -81,7 +81,7 @@ def load_doc(path):
     context = "\n\n".join([document[i].page_content for i in range(len(document))])
     return context[:300000]
 
-def compare_answer(question,docs):
+def compare_answer(chat_llm,question,docs):
     
     retrival_system_template = """You are a helpful assistant, You need to extract as much text as you can which is relater or relevant to the answer of the user question from the context provided.
 Do not try to answer the question, just extract the text relevant to the answer of the user question.

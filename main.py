@@ -157,7 +157,7 @@ user_input = st.chat_input("Query",disabled=session.input_disabled)
 
 if user_input:
     session.transcript.append(["user",user_input])
-    response = utils.compare_answer(user_input,docs)
+    response = utils.compare_answer(chat_llm,user_input,docs)
     session.transcript.append(["assistant",response])
 
 if len(session.transcript)>0:
