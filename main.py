@@ -10,7 +10,6 @@ from langchain.document_loaders import DirectoryLoader,PyPDFLoader
 from langchain.document_loaders import UnstructuredExcelLoader
 from langchain.vectorstores import DocArrayInMemorySearch
 from langchain.memory import ConversationBufferMemory
-from IPython.display import display, Markdown
 import pandas as pd
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
@@ -21,7 +20,6 @@ from langchain.experimental.plan_and_execute import PlanAndExecute, load_agent_e
 from langchain import OpenAI, VectorDBQA
 from langchain.chains.router import MultiRetrievalQAChain
 import streamlit as st
-import pandas as pd
 # from langchain.document_loaders import UnstructuredPDFLoader
 # _ = load_dotenv(find_dotenv())
 
