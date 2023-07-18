@@ -50,7 +50,7 @@ institute_data_paths = {
 
 with st.sidebar:
     institute = st.selectbox(label="Institute",options=institute_data_paths)
-    session.institude = institude
+    session.institute = institute
 
 docs = {
     f"{institute} Annual Report"                :   utils.load_doc(institute_data_paths[institute]),
