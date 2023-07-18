@@ -143,6 +143,12 @@ prompt = PromptTemplate(input_variables=["context", "question"],template=templat
 
 institute_names = {"Bank of Montreal":"bmo_ar2022 (2)_index","Versa Bank":"VBAR_index","National Bank of Canada":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"}
 
+institute_data_paths = {
+    "Bank of Montreal (BMO)"            :   "./data/bmo_ar2022 (2).pdf",
+    "Versa Bank"                        :   "./data/Versa bank",
+    "National Bank of Canada (NBC)"     :   "./data/NATIONAL BANK OF CANADA_ 2022 Annual Report (1).pdf"
+    }
+
 with st.sidebar:
     institute = st.selectbox(label="Institute",options=institute_names)
 
