@@ -76,7 +76,7 @@ q2y_list = [
     ]
 questions = [q1,q1y_list,q1n_list,q2,q2y_list]
 
-def analyse: 
+def analyse(): 
     utils.analyse(session)
 
 with st.sidebar:
