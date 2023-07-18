@@ -127,12 +127,12 @@ Answer:
 def analyse(questions,session,llm,db):
     q1,q1y_list,q1n_list,q2,q2y_list = questions
     with st.sidebar:
-        with st.spinner(f"Checking if {session.institute} belongs to BCAR Short Form Category"):
+        with st.spinner(f"Checking if {session.institute} belongs to Short Form BCAR Category"):
             session.analyze_disabled = True
-            session.analysis.append(f"The first step is to figure out whether {session.institute} belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to, the following series of questions need to be answered.")
+            session.analysis.append(f"The first step is to figure out whether {session.institute} belong to Short Form BCAR, Category III BCAR or Full BCAR category.\n\nTo determine which of the above category the institute belongs to, the following series of questions need to be answered.")
             q1_ans = get_answer(llm,db,q1)
             session.analysis.append(f"1) {q1} {q1_ans}")
-            session.institute_type = "Short Form"
+            session.institute_type = "Short Form BCAR"
             possibly_cat3 = False
             if q1_ans.startswith("Yes"):
                 for qs in q1y_list:
@@ -149,10 +149,10 @@ def analyse(questions,session,llm,db):
                         possibly_cat3 = True
                         break
     with st.sidebar:
-        with st.spinner(f"Checking if {session.institute} belongs to BCAR Category III Category"):
+        with st.spinner(f"Checking if {session.institute} belongs to Category III BCAR"):
             if possibly_cat3:
-                session.analysis.append(f"Based on the answers of the above questions {session.institute} does not come under BCAR Short Form Category. To determine if it comes under BCAR Category III the following series of questions need to be answered.")
-                session.institute_type = "Category 3"
+                session.analysis.append(f"Based on the answers of the above questions {session.institute} does not come under Short Form BCAR Category. To determine if it comes under Category III BCAR the following series of questions need to be answered.")
+                session.institute_type = "Category III BCAR"
                 q2_ans = get_answer(llm,db,q2)
                 session.analysis.append(f"1) {q2} {q2_ans}")    
                 if q2_ans.startswith("Yes"):
@@ -160,15 +160,15 @@ def analyse(questions,session,llm,db):
                         qs_ans = get_answer(llm,db,qs)
                         session.analysis.append(f"{2+q2y_list.index(qs)}) {qs} {qs_ans}")    
                         if qs_ans.startswith("Yes"):
-                            session.analysis.append(f"Based on the answers of the above questions {session.institute} does not come under BCAR Short Form or BCAR Category III so it belongs to Full BCAR Category")
-                            session.institute_type = "Full Form"
+                            session.analysis.append(f"Based on the answers of the above questions {session.institute} comes under Full BCAR Category")
+                            session.institute_type = "Full BCAR"
                             break
-                        session.analysis.append(f"Based on the answers of the above questions {session.institute} comes under BCAR Category III")
+                        session.analysis.append(f"Based on the answers of the above questions {session.institute} comes under Category III BCAR")
                 else:
-                    session.analysis.append(f"Based on the answers of the above questions {session.institute} does not come under BCAR Short Form or BCAR Category III so it belongs to Full BCAR Category")
-                    session.institute_type = "Full Form"
+                    session.analysis.append(f"Based on the answers of the above questions {session.institute} comes under Full BCAR Category")
+                    session.institute_type = "Full BCAR"
             else:
-                session.analysis.append(f"Based on the answers of the above questions {session.institute} comes under BCAR Short Form Category")
+                session.analysis.append(f"Based on the answers of the above questions {session.institute} comes under Short Form BCAR Category")
             session.input_disabled = False
             
     schedules = pd.read_csv("schedules.csv",delimiter="|")
@@ -211,76 +211,3 @@ You might have to compare points from more than one document to answer the quest
     compare_chat_prompt = ChatPromptTemplate.from_messages(messages)
     response = chat_llm(compare_chat_prompt.format_prompt(institute=session.institute,institute_type=session.institute_type,question=question,context=compare_context).to_messages()).content
     return response
-
-# def get_answer(question):
-    # agent = RetrievalQA.from_chain_type(llm = embedding_llm,
-    #     chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
-    #     retriever=bank_db.as_retriever(),
-    #     verbose=False,
-    #     chain_type_kwargs={
-    #     "verbose":True,
-    #     "prompt": prompt,
-    #     "memory": ConversationBufferMemory(
-    #         input_key="question"),
-    # })
-    # return agent.run(question)
-    # pass
-
-# def analyse(questions,session):
-        # q1,q1y_list,q1n_list,q2,q2y_list = questions
-        # with st.sidebar:
-        #     with st.spinner(f"Checking if {session.institute} belongs to BCAR Short Form Category"):
-        #         session.analyze_disabled = True
-        #         session.analysis.append("The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to, you need to answer a series of questions.")
-        #         q1_ans = get_answer(q1)
-        #         session.analysis.append(f"1) {q1} {q1_ans}")
-        #         session.institute_type = "Short Form"
-        #         possibly_cat3 = False
-        #         if q1_ans.startswith("Yes"):
-        #             for qs in q1y_list:
-        #                 qs_ans = get_answer(qs)
-        #                 session.analysis.append(f"{2+q1y_list.index(qs)}) {qs} {qs_ans}")    
-        #                 if qs_ans.startswith("No"):
-        #                     possibly_cat3 = True
-        #                     break
-        #         elif q1_ans.startswith("No"):
-        #             for qs in q1n_list:
-        #                 qs_ans = get_answer(qs)
-        #                 session.analysis.append(f"{2+q1n_list.index(qs)}) {qs} {qs_ans}")    
-        #                 if qs_ans.startswith("No"):
-        #                     possibly_cat3 = True
-        #                     break
-        # with st.sidebar:
-        #     with st.spinner(f"Checking if {session.institute} belongs to BCAR Category III Category"):
-        #         if possibly_cat3:
-        #             session.analysis.append("Based on the answers of the above question the institude does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III")
-        #             session.institute_type = "Category 3"
-        #             q2_ans = get_answer(q2)
-        #             session.analysis.append(f"1) {q2} {q2_ans}")    
-        #             if q2_ans.startswith("Yes"):
-        #                 for qs in q2y_list:
-        #                     qs_ans = get_answer(qs)
-        #                     session.analysis.append(f"{2+q2y_list.index(qs)}) {qs} {qs_ans}")    
-        #                     if qs_ans.startswith("Yes"):
-        #                         session.analysis.append(f"Based on the answers of the above question {session.institute} does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
-        #                         session.institute_type = "Full Form"
-        #                         break
-        #                     session.analysis.append(f"Based on the answers of the above question {session.institute} comes under BCAR Category III")
-        #             else:
-        #                 session.analysis.append(f"Based on the answers of the above question {session.institute} does not come under BCAR Short Form or BCAR Category III so it belongs to Full BCAR Category")
-        #                 session.institute_type = "Full Form"
-        #         else:
-        #             session.analysis.append(f"Based on the answers of the above question {session.institute} comes under BCAR Short Form Category")
-        # session.input_disabled = False
-
-    # schedules = pd.read_csv("schedules.csv",delimiter="|")
-    # limited_schedules = schedules[schedules[session.institute_type]][["Schedule Number","Schedules"]]
-    # # limited_schedules = "\n".join([f"{i+1}) {limited_schedules[i]}\n" for i in range(len(limited_schedules))])
-    # session.transcript.append(f"According to the information provided the Institute belongs to {session.institute_type} category and thus the required schedules are limited to:")
-    # session.transcript.append(limited_schedules)                                                           
-
-# analysis_text = "\n\n".join(session.analysis)+"\n\n"+session.transcript[0]+"\n\n"+session.transcript[0].to_markdown()
-# with st.expander("analysis"):
-#     st.write(analysis_text)
-# analysis_db = FAISS.from_texts([analysis_text],embeddings)
-
