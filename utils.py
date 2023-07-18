@@ -122,7 +122,7 @@ Answer:
     })
     return agent.run(question)
 
-def analyze(questions,session,llm,db):
+def analyse(questions,session,llm,db):
     with st.sidebar:
         with st.spinner(f"Checking if {institute} belongs to BCAR Short Form Category"):
             session.analyze_disabled = True
