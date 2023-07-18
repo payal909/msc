@@ -72,7 +72,7 @@ def setup_session(session):
     if 'institute' not in session:
         session.institute = ""
     if 'institute_type' not in session:
-        session.institute_type = "" 
+        session.institute_type = ""
 
 def setup_llm():
     os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]

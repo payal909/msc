@@ -77,7 +77,8 @@ from langchain.schema import (
 
 utils.setup_page()
 
-session = utils.setup_session(st.session_state)
+session = st.session_state
+utils.setup_session(session)
 
 all_documents = {
     "BCAR"                              :   {"data":"./data/Basel Capital Adequacy Reporting (BCAR) 2023 (2).pdf","index":"Basel Capital Adequacy Reporting (BCAR) 2023 (2)_index"},
