@@ -139,7 +139,7 @@ user_input = st.chat_input("Query",disabled=session.input_disabled)
 
 if user_input:
     session.transcript.append(["user",user_input])
-    bot_output = utils.compare_answer(chat_llm,user_input,docs)
+    bot_output = utils.compare_answer(chat_llm,session,user_input,docs)
     session.transcript.append(["assistant",bot_output])
 
 if len(session.transcript)>0:

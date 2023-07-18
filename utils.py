@@ -180,7 +180,7 @@ def analyse(questions,session,llm,db):
     #     st.write(analysis_text)
     # analysis_db = FAISS.from_texts([analysis_text],embeddings)
 
-def compare_answer(chat_llm,question,docs):
+def compare_answer(chat_llm,session,question,docs):
     
     retrival_system_template = """You are a helpful assistant, You need to extract as much text as you can which is relater or relevant to the answer of the user question from the context provided.
 Do not try to answer the question, just extract the text relevant to the answer of the user question.
@@ -211,7 +211,7 @@ You might have to compare points from more than one document to answer the quest
     compare_system_prompt = SystemMessagePromptTemplate.from_template(template=compare_system_template)
     messages = [compare_system_prompt,HumanMessage(content=question)]
     compare_chat_prompt = ChatPromptTemplate.from_messages(messages)
-    response = chat_llm(compare_chat_prompt.format_prompt(institute=institute,institute_type=institute_type,question=question,context=compare_context).to_messages()).content
+    response = chat_llm(compare_chat_prompt.format_prompt(institute=session.institute,institute_type=session.institute_type,question=question,context=compare_context).to_messages()).content
     return response
 
 # def get_answer(question):
