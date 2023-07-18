@@ -36,7 +36,8 @@ import utils
 
 utils.setup_page()
 
-session = utils.setup_session()
+session = st.session_state
+utils.setup_session(session)
 
 embedding_llm, embeddings, chat_llm = utils.setup_llm()
 
