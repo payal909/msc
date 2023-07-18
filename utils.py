@@ -97,7 +97,7 @@ Use the following context (delimited by <ctx></ctx>) for finding out the relevan
     
     summary = dict()
     for doc_name,doc_txt in tqdm(docs.items()):
-        summary[doc_name] = llm(compare_chat_prompt.format_prompt(context=doc_txt).to_messages()).content
+        summary[doc_name] = chat_llm(compare_chat_prompt.format_prompt(context=doc_txt).to_messages()).content
 
     compare_context = "\n\n".join([f"Relevant points from {doc_name}:\n\n{doc_summary}" for doc_name,doc_summary in summary.items()])
     
@@ -112,7 +112,7 @@ You might have to compare points from more than one document to answer the quest
     compare_system_prompt = SystemMessagePromptTemplate.from_template(template=compare_system_template)
     messages = [compare_system_prompt,HumanMessage(content=question)]
     compare_chat_prompt = ChatPromptTemplate.from_messages(messages)
-    response = llm(compare_chat_prompt.format_prompt(institute=institute,institute_type=institute_type,question=question,context=compare_context).to_messages()).content
+    response = chat_llm(compare_chat_prompt.format_prompt(institute=institute,institute_type=institute_type,question=question,context=compare_context).to_messages()).content
     return response
 
 def get_answer(question):
