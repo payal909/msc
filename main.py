@@ -62,11 +62,6 @@ with st.sidebar:
     institute = st.selectbox(label="Institute",options=institute_data_paths)
     session.institute = institute
 
-docs = {
-    f"{institute} Annual Report"                :   utils.load_doc(institute_data_paths[institute]),
-    "Basel Capital Adequacy Reporting (BCAR)"   :   utils.load_doc("./data/Basel Capital Adequacy Reporting (BCAR) 2023 (2).pdf"),
-    }
-
 q1 = f"Does {session.institute} have a parent company?"
 q1y_list = [
     f"Is {session.institute}'s parent an operating company regulated by OSFI?",
@@ -86,7 +81,6 @@ q2y_list = [
     f"Does {session.institute} have any other types of derivative exposure?",
     f"Does {session.institute} have exposure to other off-balance sheet items greater than 100% of total capital?"
     ]
-questions = (q1,q1y_list,q1n_list,q2,q2y_list)
 
 def get_answer(question):
     # agent = RetrievalQA.from_chain_type(llm = embedding_llm,
@@ -147,7 +141,11 @@ def analyse():
             else:
                 session.analysis.append(f"Based on the answers of the above question {session.institute} comes under BCAR Short Form Category")
     session.input_disabled = False
-        
+    docs = {
+    f"{institute} Annual Report"                :   utils.load_doc(institute_data_paths[institute]),
+    "Basel Capital Adequacy Reporting (BCAR)"   :   utils.load_doc("./data/Basel Capital Adequacy Reporting (BCAR) 2023 (2).pdf"),
+    }
+
 with st.sidebar:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyse)
     for message in session.analysis:
