@@ -141,16 +141,16 @@ def analyse():
             else:
                 session.analysis.append(f"Based on the answers of the above question {session.institute} comes under BCAR Short Form Category")
     session.input_disabled = False
-    docs = {
-    f"{institute} Annual Report"                :   utils.load_doc(institute_data_paths[institute]),
-    "Basel Capital Adequacy Reporting (BCAR)"   :   utils.load_doc("./data/Basel Capital Adequacy Reporting (BCAR) 2023 (2).pdf"),
-    }
 
 with st.sidebar:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyse)
     for message in session.analysis:
-        st.write(message) 
+        st.write(message)
 
+docs = {
+    f"{institute} Annual Report"                :   utils.load_doc(institute_data_paths[institute]),
+    "Basel Capital Adequacy Reporting (BCAR)"   :   utils.load_doc("./data/Basel Capital Adequacy Reporting (BCAR) 2023 (2).pdf"),
+    }
 
 user_input = st.chat_input("Query",disabled=session.input_disabled)
 
