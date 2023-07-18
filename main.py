@@ -37,7 +37,18 @@ import utils
 utils.setup_page()
 
 session = st.session_state
-utils.setup_session(session)
+if 'transcript' not in session:
+    session.transcript = []
+if 'analysis' not in session:
+    session.analysis = []
+if 'input_disabled' not in session:
+    session.input_disabled = True
+if 'analyze_disabled' not in session:
+    session.analyze_disabled = False
+if 'institute' not in session:
+    session.institute = ""
+if 'institute_type' not in session:
+    session.institute_type = "" 
 
 embedding_llm, embeddings, chat_llm = utils.setup_llm()
 

@@ -58,20 +58,7 @@ def setup_page():
     </style>
     '''
     st.markdown(hide, unsafe_allow_html=True)
-    
-def setup_session(session):
-    if 'transcript' not in session:
-        session.transcript = []
-    if 'analysis' not in session:
-        session.analysis = []
-    if 'input_disabled' not in session:
-        session.input_disabled = True
-    if 'analyze_disabled' not in session:
-        session.analyze_disabled = False
-    if 'institute' not in session:
-        session.institute = ""
-    if 'institute_type' not in session:
-        session.institute_type = ""        
+              
 
 def setup_llm():
     os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
