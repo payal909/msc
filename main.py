@@ -98,13 +98,6 @@ with st.sidebar:
 
 bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institutes[institute]["index"])
 
-docs = {
-    f"{institute} Annual Report"                :   utils.load_doc(all_documents[institute]["data"]),
-    "Basel Capital Adequacy Reporting (BCAR)"   :   utils.load_doc(all_documents["BCAR"]["data"]),
-    }
-
-
-
 q1 = f"Does {institute} have a parent company?"
 q1y_list = [
     f"Is {institute}'s parent an operating company regulated by OSFI?",
@@ -133,7 +126,13 @@ def analyse():
 with st.sidebar:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyse)
     for message in session.analysis:
-        st.write(message)                                                              
+        st.write(message)                           
+        
+docs = {
+    f"{institute} Annual Report"                :   utils.load_doc(all_documents[institute]["data"]),
+    "Basel Capital Adequacy Reporting (BCAR)"   :   utils.load_doc(all_documents["BCAR"]["data"]),
+    "Analysis Report"                           :   session.analysis_text,
+    }                                   
 
 user_input = st.chat_input("Query",disabled=session.input_disabled)
 

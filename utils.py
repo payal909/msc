@@ -73,6 +73,8 @@ def setup_session(session):
         session.institute = ""
     if 'institute_type' not in session:
         session.institute_type = ""
+    if "analysis_text" not in session:
+        session.analysis_text = ""
 
 def setup_llm():
     os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
@@ -175,10 +177,7 @@ def analyse(questions,session,llm,db):
     session.transcript.append(f"According to the information provided {session.institute} belongs to {session.institute_type} category and thus the required schedules are limited to:")
     session.transcript.append(limited_schedules)
     
-    # analysis_text = "\n\n".join(session.analysis)+"\n\n"+session.transcript[0]+"\n\n"+session.transcript[0].to_markdown()
-    # with st.expander("analysis"):
-    #     st.write(analysis_text)
-    # analysis_db = FAISS.from_texts([analysis_text],embeddings)
+    session.analysis_text = "\n\n".join(session.analysis)+"\n\n"+session.transcript[0]+"\n\n"+session.transcript[0].to_markdown()
 
 def compare_answer(chat_llm,session,question,docs):
     
