@@ -82,7 +82,7 @@ You might have to compare points from more than one document to answer the quest
 
 question = f"Based on the fiscal year-end mentioned in {institute}'s Annual Report when should it submit BCAR?"
 
-user_input = st.chat_input("Query",disabled=session.input_disabled)
+user_input = st.chat_input("Query")
 
 
 
