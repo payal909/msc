@@ -62,7 +62,7 @@ questions = [q1,q1y_list,q1n_list,q2,q2y_list]
 
 if user_input:
     session.transcript.append(["user",user_input])
-    response = compare_answer(user_input,docs)
+    response = utils.compare_answer(user_input,docs)
     session.transcript.append(["assistant",response])
 
 if len(session.transcript)>0:
