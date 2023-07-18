@@ -34,6 +34,7 @@ from langchain.schema import (
     HumanMessage,
     SystemMessage
 )
+import utils
 
 utils.setup_page()
 
