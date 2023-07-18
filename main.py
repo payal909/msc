@@ -42,15 +42,15 @@ session = utils.setup_session()
 
 embedding_llm, embeddings, chat_llm = utils.setup_llm()
 
-with st.sidebar:
-    institute = st.selectbox(label="Institute",options=institute_names)
-    session.institude = institude
-    
 institute_data_paths = {
     "Bank of Montreal (BMO)"            :   "./data/bmo_ar2022 (2).pdf",
     "Versa Bank"                        :   "./data/Versa bank",
     "National Bank of Canada (NBC)"     :   "./data/NATIONAL BANK OF CANADA_ 2022 Annual Report (1).pdf"
     }
+
+with st.sidebar:
+    institute = st.selectbox(label="Institute",options=institute_data_paths)
+    session.institude = institude
 
 docs = {
     f"{institute} Annual Report"                :   utils.load_doc(institute_data_paths[institute]),
