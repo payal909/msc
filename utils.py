@@ -60,6 +60,19 @@ def setup_page():
     '''
     st.markdown(hide, unsafe_allow_html=True)
               
+def setup_session(session):
+    if 'transcript' not in session:
+        session.transcript = []
+    if 'analysis' not in session:
+        session.analysis = []
+    if 'input_disabled' not in session:
+        session.input_disabled = True
+    if 'analyze_disabled' not in session:
+        session.analyze_disabled = False
+    if 'institute' not in session:
+        session.institute = ""
+    if 'institute_type' not in session:
+        session.institute_type = "" 
 
 def setup_llm():
     os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
@@ -80,6 +93,91 @@ def load_doc(path):
     document = doc.load()
     context = "\n\n".join([document[i].page_content for i in range(len(document))])
     return context[:300000]
+
+def get_answer(llm,db,question):
+    template = """
+You are a helpful virtual assistant of OSFI. Analyze the context and answer the question in one word "Yes" or "No" only. Remember the
+answer should be only "Yes" or "No". If you don't know the answer, just answer "No".
+Use the following context (delimited by <ctx></ctx>) to answer the question:
+
+------
+<ctx>
+{context}
+</ctx>
+------
+{question}
+Answer:
+"""
+
+    prompt = PromptTemplate(input_variables=["context", "question"],template=template)
+    agent = RetrievalQA.from_chain_type(llm = llm,
+        chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
+        retriever=db.as_retriever(),
+        verbose=False,
+        chain_type_kwargs={
+        "verbose":False,
+        "prompt": prompt,
+        "memory": ConversationBufferMemory(
+            input_key="question"),
+    })
+    return agent.run(question)
+
+def analyze(questions,session,llm,db):
+    with st.sidebar:
+        with st.spinner(f"Checking if {institute} belongs to BCAR Short Form Category"):
+            session.analyze_disabled = True
+            session.analysis.append("The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to you need to answer a series of questions.")
+            q1_ans = get_answer(llm,db,q1)
+            session.analysis.append(f"1) {q1} {q1_ans}")
+            session.institute_type = "Short Form"
+            possibly_cat3 = False
+            if q1_ans.startswith("Yes"):
+                for qs in q1y_list:
+                    qs_ans = get_answer(llm,db,qs)
+                    session.analysis.append(f"{2+q1y_list.index(qs)}) {qs} {qs_ans}")    
+                    if qs_ans.startswith("No"):
+                        possibly_cat3 = True
+                        break
+            elif q1_ans.startswith("No"):
+                for qs in q1n_list:
+                    qs_ans = get_answer(llm,db,qs)
+                    session.analysis.append(f"{2+q1n_list.index(qs)}) {qs} {qs_ans}")    
+                    if qs_ans.startswith("No"):
+                        possibly_cat3 = True
+                        break
+    with st.sidebar:
+        with st.spinner(f"Checking if {institute} belongs to BCAR Category III Category"):
+            if possibly_cat3:
+                session.analysis.append("Based on the answers of the above question the institute does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III")
+                session.institute_type = "Category 3"
+                q2_ans = get_answer(llm,db,q2)
+                session.analysis.append(f"1) {q2} {q2_ans}")    
+                if q2_ans.startswith("Yes"):
+                    for qs in q2y_list:
+                        qs_ans = get_answer(llm,db,qs)
+                        session.analysis.append(f"{2+q2y_list.index(qs)}) {qs} {qs_ans}")    
+                        if qs_ans.startswith("Yes"):
+                            session.analysis.append("Based on the answers of the above question the institute does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
+                            session.institute_type = "Full Form"
+                            break
+                        session.analysis.append("Based on the answers of the above question the institute comes under BCAR Category III")
+                else:
+                    session.analysis.append("Based on the answers of the above question the institute does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
+                    session.institute_type = "Full Form"
+            else:
+                session.analysis.append("Based on the answers of the above question the institute comes under BCAR Short Form Category")
+            session.input_disabled = False
+            
+    schedules = pd.read_csv("schedules.csv",delimiter="|")
+    limited_schedules = schedules[schedules[session.institute_type]][["Schedule Number","Schedules"]]
+    # limited_schedules = "\n".join([f"{i+1}) {limited_schedules[i]}\n" for i in range(len(limited_schedules))])
+    session.transcript.append(f"According to the information provided the Institute belongs to {session.institute_type} category and thus the required schedules are limited to:")
+    session.transcript.append(limited_schedules)
+    
+    # analysis_text = "\n\n".join(session.analysis)+"\n\n"+session.transcript[0]+"\n\n"+session.transcript[0].to_markdown()
+    # with st.expander("analysis"):
+    #     st.write(analysis_text)
+    # analysis_db = FAISS.from_texts([analysis_text],embeddings)
 
 def compare_answer(chat_llm,question,docs):
     
@@ -115,7 +213,7 @@ You might have to compare points from more than one document to answer the quest
     response = chat_llm(compare_chat_prompt.format_prompt(institute=institute,institute_type=institute_type,question=question,context=compare_context).to_messages()).content
     return response
 
-def get_answer(question):
+# def get_answer(question):
     # agent = RetrievalQA.from_chain_type(llm = embedding_llm,
     #     chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
     #     retriever=bank_db.as_retriever(),
@@ -127,9 +225,9 @@ def get_answer(question):
     #         input_key="question"),
     # })
     # return agent.run(question)
-    pass
+    # pass
 
-def analyse(questions,session):
+# def analyse(questions,session):
         # q1,q1y_list,q1n_list,q2,q2y_list = questions
         # with st.sidebar:
         #     with st.spinner(f"Checking if {session.institute} belongs to BCAR Short Form Category"):
@@ -174,7 +272,7 @@ def analyse(questions,session):
         #                 session.institute_type = "Full Form"
         #         else:
         #             session.analysis.append(f"Based on the answers of the above question {session.institute} comes under BCAR Short Form Category")
-        session.input_disabled = False
+        # session.input_disabled = False
 
     # schedules = pd.read_csv("schedules.csv",delimiter="|")
     # limited_schedules = schedules[schedules[session.institute_type]][["Schedule Number","Schedules"]]
