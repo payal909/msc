@@ -102,16 +102,18 @@ st.markdown(hide, unsafe_allow_html=True)
 
 
 session = st.session_state
-if bv
-
+if 'transcript' not in session:
+    session.transcript = []
+if 'analysis' not in session:
+    session.analysis = []
 if 'input_disabled' not in session:
     session.input_disabled = True
-
 if 'analyze_disabled' not in session:
     session.analyze_disabled = False
-
+if 'institute' not in session:
+    session.institute = ""
 if 'institute_type' not in session:
-    session.institute_type = "Full Form"
+    session.institute_type = "" 
 
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 embedding_llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
