@@ -76,7 +76,7 @@ def setup_session(session):
 
 def setup_llm():
     os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
-    embedding_llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+    embedding_llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0)
     embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
     
     claude_models = ["claude-instant-1","claude-2"]
