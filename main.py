@@ -102,11 +102,7 @@ st.markdown(hide, unsafe_allow_html=True)
 
 
 session = st.session_state
-if 'transcript' not in session:
-    session.transcript = []
-
-if 'analysis' not in session:
-    session.analysis = []
+if bv
 
 if 'input_disabled' not in session:
     session.input_disabled = True
@@ -303,7 +299,7 @@ You might have to compare points from more than one document to answer the quest
 
 if user_input:
     session.transcript.append(["user",user_input])
-    bot_output = utils.compare_answer(user_input,docs)
+    bot_output = compare_answer(user_input,docs)
     session.transcript.append(["assistant",bot_output])
 
 if len(session.transcript)>0:
