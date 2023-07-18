@@ -1,0 +1,181 @@
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    AIMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+from langchain.schema import AIMessage, HumanMessage, SystemMessage
+from langchain.document_loaders import DirectoryLoader,PyPDFLoader
+from langchain.document_loaders import PyPDFLoader
+from tqdm import tqdm
+from langchain.chat_models import ChatAnthropic
+import os
+import streamlit as st
+import utils
+
+def setup_page():
+    st.set_page_config(layout="wide")
+
+    hide = '''
+    <style>
+    MainMenu {visibility:hidden;}
+    header {visibility:hidden;}
+    footer {visibility:hidden;}
+    .css-1b9x38r {
+        display: none;
+        }
+        
+    .css-1cypcdb {
+        min-width: 500px;
+        max-width: 500px;
+    }
+    .css-1544g2n {
+        padding: 1rem 1rem 1.5rem;
+    }
+    div.block-container {
+        padding-top: 0rem;
+        }
+    </style>
+    '''
+    st.markdown(hide, unsafe_allow_html=True)
+    
+def setup_session():
+    session = st.session_state
+    if 'transcript' not in session:
+        session.transcript = []
+    if 'analysis' not in session:
+        session.analysis = []
+    if 'input_disabled' not in session:
+        session.input_disabled = True
+    if 'analyze_disabled' not in session:
+        session.analyze_disabled = False
+    if 'institute' not in session:
+        session.institute = ""
+    if 'institute_type' not in session:
+        session.institute_type = ""        
+    return session
+
+def setup_llm():
+    os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+    embedding_llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+    embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
+    
+    claude_models = ["claude-instant-1","claude-2"]
+    os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
+    chat_llm = ChatAnthropic(model=claude_models[1],temperature= 0)
+    
+    return embedding_llm, embeddings, chat_llm
+
+def load_doc(path):
+    if path.endswith(".pdf"):
+        doc = PyPDFLoader(file_path=path)
+    else:
+        doc = DirectoryLoader(path=path,glob="**/*.pdf")
+    document = doc.load()
+    context = "\n\n".join([document[i].page_content for i in range(len(document))])
+    return context[:300000]
+
+def compare_answer(question,docs):
+    
+    retrival_system_template = """You are a helpful assistant, You need to extract as much text as you can which is relater or relevant to the answer of the user question from the context provided.
+Do not try to answer the question, just extract the text relevant to the answer of the user question.
+Use the following context (delimited by <ctx></ctx>) for finding out the relevant text:
+
+<ctx>
+{context}
+</ctx>"""
+    
+    retrival_system_prompt = SystemMessagePromptTemplate.from_template(template=retrival_system_template)
+    messages = [retrival_system_prompt,HumanMessage(content=question)]
+    compare_chat_prompt = ChatPromptTemplate.from_messages(messages)
+    
+    summary = dict()
+    for doc_name,doc_txt in tqdm(docs.items()):
+        summary[doc_name] = llm(compare_chat_prompt.format_prompt(context=doc_txt).to_messages()).content
+
+    compare_context = "\n\n".join([f"Relevant points from {doc_name}:\n\n{doc_summary}" for doc_name,doc_summary in summary.items()])
+    
+    compare_system_template = """You are a helpful chatbot who has to answer question of a user from the institute {institute} which comes under the BCAR {institute_type} section.
+You will be given relevant points from various documents that will help you answer the user question.
+Below is a list of relevant points along with the name of the document from where thoes points are from.
+Consider all the documents provided to you and answer the question by choosing all the relevant points to the question.
+You might have to compare points from more than one document to answer the question.
+
+{context}"""
+
+    compare_system_prompt = SystemMessagePromptTemplate.from_template(template=compare_system_template)
+    messages = [compare_system_prompt,HumanMessage(content=question)]
+    compare_chat_prompt = ChatPromptTemplate.from_messages(messages)
+    response = llm(compare_chat_prompt.format_prompt(institute=institute,institute_type=institute_type,question=question,context=compare_context).to_messages()).content
+    return response
+
+def get_answer(question):
+    agent = RetrievalQA.from_chain_type(llm = embedding_llm,
+        chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
+        retriever=bank_db.as_retriever(),
+        verbose=False,
+        chain_type_kwargs={
+        "verbose":True,
+        "prompt": prompt,
+        "memory": ConversationBufferMemory(
+            input_key="question"),
+    })
+    return agent.run(question)    
+
+def analyse():
+    with st.sidebar:
+        with st.spinner(f"Checking if {session.institute} belongs to BCAR Short Form Category"):
+            session.analyze_disabled = True
+            session.analysis.append("The first step is to figure out whether the institute belong to BCAR Short Form, Category III or Full BCAR category.\n\nTo determine which of the above category the institute belongs to, you need to answer a series of questions.")
+            q1_ans = get_answer(q1)
+            session.analysis.append(f"1) {q1} {q1_ans}")
+            session.institute_type = "Short Form"
+            possibly_cat3 = False
+            if q1_ans.startswith("Yes"):
+                for qs in q1y_list:
+                    qs_ans = get_answer(qs)
+                    session.analysis.append(f"{2+q1y_list.index(qs)}) {qs} {qs_ans}")    
+                    if qs_ans.startswith("No"):
+                        possibly_cat3 = True
+                        break
+            elif q1_ans.startswith("No"):
+                for qs in q1n_list:
+                    qs_ans = get_answer(qs)
+                    session.analysis.append(f"{2+q1n_list.index(qs)}) {qs} {qs_ans}")    
+                    if qs_ans.startswith("No"):
+                        possibly_cat3 = True
+                        break
+    with st.sidebar:
+        with st.spinner(f"Checking if {session.institute} belongs to BCAR Category III Category"):
+            if possibly_cat3:
+                session.analysis.append("Based on the answers of the above question the institude does not come under BCAR Short Form Category. We will now check if it comes under BCAR Category III")
+                session.institute_type = "Category 3"
+                q2_ans = get_answer(q2)
+                session.analysis.append(f"1) {q2} {q2_ans}")    
+                if q2_ans.startswith("Yes"):
+                    for qs in q2y_list:
+                        qs_ans = get_answer(qs)
+                        session.analysis.append(f"{2+q2y_list.index(qs)}) {qs} {qs_ans}")    
+                        if qs_ans.startswith("Yes"):
+                            session.analysis.append(f"Based on the answers of the above question {session.institute} does not come under BCAR Short Form or BCAR Category II so it belongs to Full BCAR Category")
+                            session.institute_type = "Full Form"
+                            break
+                        session.analysis.append(f"Based on the answers of the above question {session.institute} comes under BCAR Category III")
+                else:
+                    session.analysis.append(f"Based on the answers of the above question {session.institute} does not come under BCAR Short Form or BCAR Category III so it belongs to Full BCAR Category")
+                    session.institute_type = "Full Form"
+            else:
+                session.analysis.append(f"Based on the answers of the above question {session.institute} comes under BCAR Short Form Category")
+            session.input_disabled = False
+
+    # schedules = pd.read_csv("schedules.csv",delimiter="|")
+    # limited_schedules = schedules[schedules[session.institute_type]][["Schedule Number","Schedules"]]
+    # # limited_schedules = "\n".join([f"{i+1}) {limited_schedules[i]}\n" for i in range(len(limited_schedules))])
+    # session.transcript.append(f"According to the information provided the Institute belongs to {session.institute_type} category and thus the required schedules are limited to:")
+    # session.transcript.append(limited_schedules)                                                           
+
+# analysis_text = "\n\n".join(session.analysis)+"\n\n"+session.transcript[0]+"\n\n"+session.transcript[0].to_markdown()
+# with st.expander("analysis"):
+#     st.write(analysis_text)
+# analysis_db = FAISS.from_texts([analysis_text],embeddings)
+
