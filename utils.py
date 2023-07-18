@@ -132,17 +132,18 @@ You might have to compare points from more than one document to answer the quest
     return response
 
 def get_answer(question):
-    agent = RetrievalQA.from_chain_type(llm = embedding_llm,
-        chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
-        retriever=bank_db.as_retriever(),
-        verbose=False,
-        chain_type_kwargs={
-        "verbose":True,
-        "prompt": prompt,
-        "memory": ConversationBufferMemory(
-            input_key="question"),
-    })
-    return agent.run(question)    
+    # agent = RetrievalQA.from_chain_type(llm = embedding_llm,
+    #     chain_type='stuff', # 'stuff', 'map_reduce', 'refine', 'map_rerank'
+    #     retriever=bank_db.as_retriever(),
+    #     verbose=False,
+    #     chain_type_kwargs={
+    #     "verbose":True,
+    #     "prompt": prompt,
+    #     "memory": ConversationBufferMemory(
+    #         input_key="question"),
+    # })
+    # return agent.run(question)
+    pass
 
 def analyse():
     with st.sidebar:
