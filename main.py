@@ -142,9 +142,6 @@ if user_input:
     session.transcript.append(["assistant",bot_output])
 
 if len(session.transcript)>0:
-    with st.chat_message("assistant"):
-        st.write(session.transcript[0])
-        st.dataframe(session.transcript[1])
-    for message in session.transcript[2:]:
+    for message in session.transcript:
         st.chat_message(message[0]).write(message[1])
 

@@ -174,10 +174,9 @@ def analyse(questions,session,llm,db):
     schedules = pd.read_csv("schedules.csv",delimiter="|")
     limited_schedules = schedules[schedules[session.institute_type]][["Schedule Number","Schedules"]]
     # limited_schedules = "\n".join([f"{i+1}) {limited_schedules[i]}\n" for i in range(len(limited_schedules))])
-    session.transcript.append(f"According to the information provided {session.institute} belongs to {session.institute_type} category and thus the required schedules are limited to:")
-    session.transcript.append(limited_schedules)
+    analysis_header = f"According to the information provided {session.institute} belongs to {session.institute_type} category and thus the required schedules are limited to:"
     
-    session.analysis_text = "\n\n".join(session.analysis)+"\n\n"+session.transcript[0]+"\n\n"+session.transcript[0].to_markdown()
+    session.analysis_text = "\n\n".join(session.analysis)+"\n\n"+analysis_header+"\n\n"+limited_schedules.to_markdown()
 
 def compare_answer(chat_llm,session,question,docs):
     
