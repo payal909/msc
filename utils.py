@@ -124,6 +124,7 @@ Answer:
     })
     return agent.run(question)
 
+<<<<<<< HEAD
 def analyse(session):
     session.institute = institute
     session.input_disabled = False
@@ -180,6 +181,59 @@ def analyse(session):
     # limited_schedules = schedules[schedules[session.institute_type]][["Schedule Number","Schedules"]]
     # # limited_schedules = "\n".join([f"{i+1}) {limited_schedules[i]}\n" for i in range(len(limited_schedules))])
     # analysis_header = f"According to the information provided {session.institute} belongs to {session.institute_type} category and thus the required schedules are limited to:"
+=======
+def analyse(questions,session,llm,db):
+    q1,q1y_list,q1n_list,q2,q2y_list = questions
+    with st.sidebar:
+        with st.spinner(f"Checking if {session.institute} belongs to Short Form BCAR Category"):
+            session.analyze_disabled = True
+            session.analysis.append(f"The first step is to figure out whether {session.institute} belong to Short Form BCAR, Category III BCAR or Full BCAR category.\n\nTo determine which of the above category the institute belongs to, the following series of questions need to be answered.")
+            q1_ans = get_answer(llm,db,q1)
+            session.analysis.append(f"1) {q1} {q1_ans}")
+            session.institute_type = "Short Form BCAR"
+            possibly_cat3 = False
+            if q1_ans.startswith("Yes"):
+                for qs in q1y_list:
+                    qs_ans = get_answer(llm,db,qs)
+                    session.analysis.append(f"{2+q1y_list.index(qs)}) {qs} {qs_ans}")    
+                    if qs_ans.startswith("No"):
+                        possibly_cat3 = True
+                        break
+            elif q1_ans.startswith("No"):
+                for qs in q1n_list:
+                    qs_ans = get_answer(llm,db,qs)
+                    session.analysis.append(f"{2+q1n_list.index(qs)}) {qs} {qs_ans}")    
+                    if qs_ans.startswith("No"):
+                        possibly_cat3 = True
+                        break
+    with st.sidebar:
+        with st.spinner(f"Checking if {session.institute} belongs to Category III BCAR"):
+            if possibly_cat3:
+                session.analysis.append(f"Based on the answers of the above questions {session.institute} does not come under Short Form BCAR Category. To determine if it comes under Category III BCAR the following series of questions need to be answered.")
+                session.institute_type = "Category III BCAR"
+                q2_ans = get_answer(llm,db,q2)
+                session.analysis.append(f"1) {q2} {q2_ans}")    
+                if q2_ans.startswith("Yes"):
+                    for qs in q2y_list:
+                        qs_ans = get_answer(llm,db,qs)
+                        session.analysis.append(f"{2+q2y_list.index(qs)}) {qs} {qs_ans}")    
+                        if qs_ans.startswith("Yes"):
+                            session.analysis.append(f"Based on the answers of the above questions {session.institute} comes under Full BCAR Category")
+                            session.institute_type = "Full BCAR"
+                            break
+                        session.analysis.append(f"Based on the answers of the above questions {session.institute} comes under Category III BCAR")
+                else:
+                    session.analysis.append(f"Based on the answers of the above questions {session.institute} comes under Full BCAR Category")
+                    session.institute_type = "Full BCAR"
+            else:
+                session.analysis.append(f"Based on the answers of the above questions {session.institute} comes under Short Form BCAR Category")
+            session.input_disabled = False
+            
+    schedules = pd.read_csv("schedules.csv",delimiter="|")
+    limited_schedules = schedules[schedules[session.institute_type]][["Schedule Number","Schedules"]]
+    # limited_schedules = "\n".join([f"{i+1}) {limited_schedules[i]}\n" for i in range(len(limited_schedules))])
+    analysis_header = f"According to the information provided {session.institute} belongs to {session.institute_type} category and thus the required schedules are limited to:"
+>>>>>>> refs/remotes/origin/Khries-test
     
     # session.analysis_text = "\n\n".join(session.analysis)+"\n\n"+analysis_header+"\n\n"+limited_schedules.to_markdown()
 
@@ -214,6 +268,11 @@ You might have to compare points from more than one document to answer the quest
     compare_system_prompt = SystemMessagePromptTemplate.from_template(template=compare_system_template)
     messages = [compare_system_prompt,HumanMessage(content=question)]
     compare_chat_prompt = ChatPromptTemplate.from_messages(messages)
+<<<<<<< HEAD
     response = chat_llm(compare_chat_prompt.format_prompt(institute=session.institute,question=question,context=compare_context).to_messages()).content
     return response
 
+=======
+    response = chat_llm(compare_chat_prompt.format_prompt(institute=session.institute,institute_type=session.institute_type,question=question,context=compare_context).to_messages()).content
+    return response
+>>>>>>> refs/remotes/origin/Khries-test

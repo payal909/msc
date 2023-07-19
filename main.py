@@ -116,5 +116,8 @@ if user_input:
 if len(session.transcript)>0:
     for message in session.transcript:
         st.chat_message(message[0]).write(message[1])
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/origin/Khries-test
 
