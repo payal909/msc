@@ -96,7 +96,7 @@ with st.sidebar:
     institute = st.selectbox(label="Institute",options=institutes)
 
 def analyse():
-    with st.spinner("Loading documents...")
+    with st.spinner("Loading documents..."):
         session.analyze_disabled = False
         session.institute = institute
         session.docs = {
