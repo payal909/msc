@@ -93,7 +93,7 @@ institutes = all_documents.copy()
 del institutes["BCAR"]
 
 with st.sidebar:
-    st.title("OFSI Chatbot")
+    st.title("OSFI Chatbot")
     institute = st.selectbox(label="Institute",options=institutes)
 
 def analyse():
