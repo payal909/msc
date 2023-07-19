@@ -94,10 +94,9 @@ institutes = all_documents.copy()
 del institutes["BCAR"]
 
 with st.sidebar:
-    image = Image.open('osfi_logo.png')
-    st.image(image)
+    st.image(Image.open('osfi_logo.png'),width=100)
     st.title("OSFI Chatbot")
-    institute = st.selectbox(label="Institute",options=institutes)
+    institute = st.selectbox(label="Institute",options=institutes,label_visibility="hidden")
 
 def analyse():
     with st.sidebar:
