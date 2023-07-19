@@ -106,7 +106,7 @@ def analyse():
             "Basel Capital Adequacy Reporting (BCAR)"   :   utils.load_doc(all_documents["BCAR"]["data"]),
             }                            
             session.input_disabled = False
-            session.transcript(["assistant","How can I help you today?"])
+            session.transcript.append(["assistant","How can I help you today?"])
 
 with st.sidebar:
     analyze_button = st.button("Load Documents",use_container_width=True,disabled=session.analyze_disabled,on_click=analyse)                           
