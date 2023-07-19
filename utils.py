@@ -48,6 +48,9 @@ def setup_page():
     .css-1544g2n {
         padding: 1rem 1rem 1.5rem;
     }
+    .css-1oy2v5l {
+        margin-top: 0.7rem;
+    }
     div.block-container {
         padding-top: 0rem;
         }
