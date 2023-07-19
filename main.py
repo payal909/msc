@@ -87,6 +87,7 @@ all_documents = {
     "BCAR"                              :   {"data":"./data/Basel Capital Adequacy Reporting (BCAR) 2023 (2).pdf","index":"Basel Capital Adequacy Reporting (BCAR) 2023 (2)_index"},
     "Bank of Montreal (BMO)"            :   {"data":"./data/bmo_ar2022_removed.pdf","index":"bmo_ar2022 (2)_index"},
     "Versa Bank (VB)"                   :   {"data":"./data/Versa bank","index":"VBAR_index"},
+    "Home Bancorp (HB)"                 :   {"data":"./data/Home Bancorp 2022 Annual Report.pdf"},
     "National Bank of Canada (NBC)"     :   {"data":"./data/NATIONAL BANK OF CANADA_ 2022 Annual Report (1).pdf","index":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"},
     }
 
@@ -94,7 +95,7 @@ institutes = all_documents.copy()
 del institutes["BCAR"]
 
 with st.sidebar:
-    l,r = st.columns([1,1.1])
+    l,r = st.columns([1,1.])
     l.markdown("# OSFI Chatbot")
     r.image(Image.open('osfi_logo.png'),width=40)
     institute = st.selectbox(label="Institute",options=institutes,label_visibility="hidden")
@@ -118,7 +119,8 @@ user_input = st.chat_input("Query",disabled=session.input_disabled)
 
 if user_input:
     session.transcript.append(["user",user_input])
-    bot_output = utils.compare_answer(chat_llm,session,user_input,session.docs)
+    with st.spinner("Processing..."):
+        bot_output = utils.compare_answer(chat_llm,session,user_input,session.docs)
     session.transcript.append(["assistant",bot_output])
 
 if len(session.transcript)>0:
