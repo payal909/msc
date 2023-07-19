@@ -93,17 +93,19 @@ institutes = all_documents.copy()
 del institutes["BCAR"]
 
 with st.sidebar:
+    st.title("OFSI Chatbot")
     institute = st.selectbox(label="Institute",options=institutes)
 
 def analyse():
-    with st.spinner("Loading documents..."):
-        session.analyze_disabled = False
-        session.institute = institute
-        session.docs = {
-        f"{session.institute} Annual Report"        :   utils.load_doc(all_documents[session.institute]["data"]),
-        "Basel Capital Adequacy Reporting (BCAR)"   :   utils.load_doc(all_documents["BCAR"]["data"]),
-        }                            
-        session.input_disabled = False     
+    with st.sidebar:
+        with st.spinner("Loading documents..."):
+            session.analyze_disabled = False
+            session.institute = institute
+            session.docs = {
+            f"{session.institute} Annual Report"        :   utils.load_doc(all_documents[session.institute]["data"]),
+            "Basel Capital Adequacy Reporting (BCAR)"   :   utils.load_doc(all_documents["BCAR"]["data"]),
+            }                            
+            session.input_disabled = False     
 
 with st.sidebar:
     analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyse)                           
