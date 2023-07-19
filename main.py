@@ -99,7 +99,7 @@ with st.sidebar:
 def analyse():
     with st.sidebar:
         with st.spinner("Loading documents..."):
-            session.analyze_disabled = False
+            session.analyze_disabled = True
             session.institute = institute
             session.docs = {
             f"{session.institute} Annual Report"        :   utils.load_doc(all_documents[session.institute]["data"]),
