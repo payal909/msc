@@ -57,7 +57,7 @@ def setup_page():
               
 def setup_session(session):
     if 'transcript' not in session:
-        session.transcript = [["assistant","How can I help you today?"]]
+        session.transcript = []
     # if 'analysis' not in session:
     #     session.analysis = []
     if 'input_disabled' not in session:

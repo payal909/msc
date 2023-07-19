@@ -105,10 +105,11 @@ def analyse():
             f"{session.institute} Annual Report"        :   utils.load_doc(all_documents[session.institute]["data"]),
             "Basel Capital Adequacy Reporting (BCAR)"   :   utils.load_doc(all_documents["BCAR"]["data"]),
             }                            
-            session.input_disabled = False     
+            session.input_disabled = False
+            session.transcript(["assistant","How can I help you today?"])
 
 with st.sidebar:
-    analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyse)                           
+    analyze_button = st.button("Load Documents",use_container_width=True,disabled=session.analyze_disabled,on_click=analyse)                           
         
 user_input = st.chat_input("Query",disabled=session.input_disabled)
 
