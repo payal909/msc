@@ -76,9 +76,18 @@ def setup_session(session):
 
 def setup_llm():
     os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
-    embedding_llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0)
-    embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
+    # embedding_llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0)
+    # embeddings = OpenAIEmbeddings(model="text-embedding-ada-002",chunk_size =1)
     
+    os.environ["OPENAI_API_TYPE"] ="azure"
+    os.environ["OPENAI_API_VERSION"] ="2023-05-15"
+    os.environ["OPENAI_API_BASE"] = "https://testavinx.openai.azure.com/"
+
+    embedding_llm = AzureChatOpenAI(deployment_name="gpt-35-turbo",model_name="gpt-35-turbo",temperature=0)
+    embeddings = OpenAIEmbeddings(deployment="embedding1",model="text-embedding-ada-002",openai_api_base="https://testavinx.openai.azure.com/",openai_api_type="azure",chunk_size = 1)
+    
+    
+
     claude_models = ["claude-instant-1","claude-2"]
     os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
     chat_llm = ChatAnthropic(model=claude_models[1],temperature= 0,max_tokens_to_sample = 512)
