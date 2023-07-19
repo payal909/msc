@@ -74,6 +74,7 @@ from langchain.schema import (
     HumanMessage,
     SystemMessage
 )
+from PIL import Image
 
 utils.setup_page()
 
@@ -93,6 +94,8 @@ institutes = all_documents.copy()
 del institutes["BCAR"]
 
 with st.sidebar:
+    image = Image.open('osfi_logo.png')
+    st.image(image)
     st.title("OSFI Chatbot")
     institute = st.selectbox(label="Institute",options=institutes)
 
