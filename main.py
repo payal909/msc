@@ -94,56 +94,27 @@ del institutes["BCAR"]
 
 with st.sidebar:
     institute = st.selectbox(label="Institute",options=institutes)
-    session.institute = institute
-
-bank_db = FAISS.load_local(folder_path='./FAISS_VS', embeddings=embeddings, index_name=institutes[institute]["index"])
-
-q1 = f"Does {institute} have a parent company?"
-q1y_list = [
-    f"Is {institute}'s parent an operating company regulated by OSFI?",
-    f"Has {institute}'s parent adopted an internal rating (IRB) approach to credit risk?",
-    f"Is {institute} a fully- consolidated subsidiary?",
-    f"Does {institute} have at least 95% of its credit risk exposures captured under the IRB approach?"
-    ]
-q1n_list = [
-    f"Has {institute} adopted an internal rating (IRB) approach to credit risk?",
-    f"Is {institute} a fully- consolidated subsidiary?",
-    f"Does {institute} have at least 95% of its credit risk exposures captured under the IRB approach?"
-    ]
-q2 = f"Is {institute} reporting less than $10 billion in total assets?"
-q2y_list = [
-    f"Is {institute} reporting greater than $100 million in total loans?",
-    f"Does {institute} have an interest rate or foreign exchange derivatives with a combined notional amount greater than 100% of total capital?",
-    f"Does {institute} have any other types of derivative exposure?",
-    f"Does {institute} have exposure to other off-balance sheet items greater than 100% of total capital?"
-    ]
-    
-questions = (q1,q1y_list,q1n_list,q2,q2y_list)
 
 def analyse():
-    utils.analyse(questions,session,embedding_llm,bank_db)
-
-with st.sidebar:
-    analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyse)
-    for message in session.analysis:
-        st.write(message)                           
-        
-docs = {
-    f"{institute} Annual Report"                :   utils.load_doc(all_documents[institute]["data"]),
-    "Basel Capital Adequacy Reporting (BCAR)"   :   utils.load_doc(all_documents["BCAR"]["data"]),
-    "Analysis Report"                           :   session.analysis_text,
+    session.institute = institute
+    session.input_disabled = False
+    session.docs = {
+    f"{session.institute} Annual Report"        :   load_doc(all_documents[session.institute]["data"]),
+    "Basel Capital Adequacy Reporting (BCAR)"   :   load_doc(all_documents["BCAR"]["data"]),
     }                                   
 
+with st.sidebar:
+    analyze_button = st.button("Analyze",use_container_width=True,disabled=session.analyze_disabled,on_click=analyse)                           
+        
 user_input = st.chat_input("Query",disabled=session.input_disabled)
 
 if user_input:
     session.transcript.append(["user",user_input])
-    bot_output = utils.compare_answer(chat_llm,session,user_input,docs)
+    bot_output = utils.compare_answer(chat_llm,session,user_input,session.docs)
     session.transcript.append(["assistant",bot_output])
 
 if len(session.transcript)>0:
     for message in session.transcript:
         st.chat_message(message[0]).write(message[1])
-        
-st.write(session.analysis_text)
+
 
