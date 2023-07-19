@@ -92,10 +92,10 @@ def setup_llm():
     os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
     chat_llm = ChatAnthropic(model=claude_models[1],temperature= 0,max_tokens_to_sample = 512)
     
-    return embedding_llm, embeddings, embedding_llm
+    return embedding_llm, embeddings, chat_llm
 
 def load_doc(path):
-    k=3000
+    k=300000
     if path.endswith(".pdf"):
         doc = PyPDFLoader(file_path=path)
     else:
