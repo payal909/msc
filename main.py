@@ -99,8 +99,8 @@ def analyse():
     session.institute = institute
     session.input_disabled = False
     session.docs = {
-    f"{session.institute} Annual Report"        :   load_doc(all_documents[session.institute]["data"]),
-    "Basel Capital Adequacy Reporting (BCAR)"   :   load_doc(all_documents["BCAR"]["data"]),
+    f"{session.institute} Annual Report"        :   utils.load_doc(all_documents[session.institute]["data"]),
+    "Basel Capital Adequacy Reporting (BCAR)"   :   utils.load_doc(all_documents["BCAR"]["data"]),
     }                                   
 
 with st.sidebar:
