@@ -81,7 +81,7 @@ def setup_llm():
     
     claude_models = ["claude-instant-1","claude-2"]
     os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
-    chat_llm = ChatAnthropic(model=claude_models[1],temperature= 0)
+    chat_llm = ChatAnthropic(model=claude_models[1],temperature= 0,cache=True,max_tokens_to_sample = 512)
     
     return embedding_llm, embeddings, chat_llm
 
