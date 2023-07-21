@@ -83,16 +83,16 @@ def setup_llm():
     os.environ["OPENAI_API_VERSION"] ="2023-05-15"
     os.environ["OPENAI_API_BASE"] = "https://testavinx.openai.azure.com/"
 
-    embedding_llm = AzureChatOpenAI(deployment_name="gpt-35-turbo",model_name="gpt-35-turbo",temperature=0)
+    openai_llm = AzureChatOpenAI(deployment_name="gpt-35-turbo",model_name="gpt-35-turbo",temperature=0)
     embeddings = OpenAIEmbeddings(deployment="embedding1",model="text-embedding-ada-002",openai_api_base="https://testavinx.openai.azure.com/",openai_api_type="azure",chunk_size = 1)
     
     
 
     claude_models = ["claude-instant-1","claude-2"]
     os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
-    chat_llm = ChatAnthropic(model=claude_models[1],temperature= 0,max_tokens_to_sample = 512)
+    anthropic_llm = ChatAnthropic(model=claude_models[1],temperature= 0,max_tokens_to_sample = 512)
     
-    return embedding_llm, embeddings, chat_llm
+    return openai_llm, embeddings, anthropic_llm
 
 def load_doc(path):
     k=300000
@@ -104,7 +104,7 @@ def load_doc(path):
     context = "\n\n".join([document[i].page_content for i in range(len(document))])
     return context[:k]
 
-def compare_answer(chat_llm,session,question,docs):
+def compare_answer(summary_llm,chat_llm,session,question,docs):
     
     retrival_system_template = """You are a helpful assistant, You need to extract as much text as you can which is relater or relevant to the answer of the user question from the context provided.
 Do not try to answer the question, just extract the text relevant to the answer of the user question.
@@ -120,7 +120,7 @@ Use the following context (delimited by <ctx></ctx>) for finding out the relevan
     
     summary = dict()
     for doc_name,doc_txt in tqdm(docs.items()):
-        summary[doc_name] = chat_llm(compare_chat_prompt.format_prompt(context=doc_txt).to_messages()).content
+        summary[doc_name] = summary_llm(compare_chat_prompt.format_prompt(context=doc_txt).to_messages()).content
 
     compare_context = "\n\n".join([f"Relevant points from {doc_name}:\n\n{doc_summary}" for doc_name,doc_summary in summary.items()])
     
