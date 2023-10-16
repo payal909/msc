@@ -1,101 +1,129 @@
+import os
+# from dotenv import load_dotenv, find_dotenv
+# from langchain.llms import GooglePalm
+from langchain.vectorstores import FAISS
+# from langchain.embeddings import GooglePalmEmbeddings
+from langchain.chains import RetrievalQA
+from langchain.chat_models import ChatOpenAI, AzureChatOpenAI
+# from langchain.llms import AzureOpenAI
+# from langchain.document_loaders import DirectoryLoader,PyPDFLoader
+# from langchain.document_loaders import UnstructuredExcelLoader
+# from langchain.vectorstores import DocArrayInMemorySearch
+from langchain.memory import ConversationBufferMemory
+# from IPython.display import display, Markdown
+# import pandas as pd
+# import gradio as gr
+# from langchain.text_splitter import CharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain import PromptTemplate
+# from langchain.vectorstores import Chroma
+from langchain.agents.tools import Tool
+from langchain.experimental.plan_and_execute import PlanAndExecute, load_agent_executor, load_chat_planner
+# from langchain import OpenAI, VectorDBQA
+# from langchain.chains.router import MultiRetrievalQAChain
+import streamlit as st
+import pandas as pd
+# from langchain.document_loaders import UnstructuredPDFLoader
+# _ = load_dotenv(find_dotenv())
+
+# from langchain.prompts.chat import (
+#     ChatPromptTemplate,
+#     SystemMessagePromptTemplate,
+#     AIMessagePromptTemplate,
+#     HumanMessagePromptTemplate,
+# )
+# from langchain.schema import (
+#     AIMessage,
+#     HumanMessage,
+#     SystemMessage
+# )
+
+import os
+from langchain.llms import GooglePalm
+from langchain.vectorstores import FAISS
+from langchain.embeddings import GooglePalmEmbeddings
+from langchain.chains import RetrievalQA
+from langchain.chat_models import ChatOpenAI, AzureChatOpenAI, ChatAnthropic
+from langchain.llms import AzureOpenAI
+from langchain.document_loaders import DirectoryLoader,PyPDFLoader
+# from langchain.document_loaders import UnstructuredExcelLoader
+# from langchain.vectorstores import DocArrayInMemorySearch
+from langchain.memory import ConversationBufferMemory
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain import PromptTemplate
+# from langchain.vectorstores import Chroma
+# from langchain.agents.tools import Tool
+# from langchain.experimental.plan_and_execute import PlanAndExecute, load_agent_executor, load_chat_planner
+# from langchain import OpenAI, VectorDBQA
+# from langchain.chains.router import MultiRetrievalQAChain
+import streamlit as st
+import pandas as pd
+from tqdm import tqdm
+import utils
+# from langchain.document_loaders import UnstructuredPDFLoader
+
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
     AIMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
-from langchain.schema import AIMessage, HumanMessage, SystemMessage
-from langchain.document_loaders import DirectoryLoader,PyPDFLoader
-from langchain.document_loaders import PyPDFLoader
-from tqdm import tqdm
-from langchain.chat_models import ChatAnthropic
-import os
-import streamlit as st
+from langchain.schema import (
+    AIMessage,
+    HumanMessage,
+    SystemMessage
+)
+from PIL import Image
+
+utils.setup_page()
 
 session = st.session_state
-if 'transcript' not in session:
-    session.transcript = []
+utils.setup_session(session)
 
-# os.environ["ANTHROPIC_API_KEY"] = "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"
-os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
-claude_models = ["claude-instant-1","claude-2"]
-llm = ChatAnthropic(model=claude_models[1],temperature= 0)
+openai_llm, embeddings, anthropic_llm = utils.setup_llm()
 
-institute = "Bank of Montreal (BMO)"
-institute_type = "Full Form"
-institute_data_paths = {
-    "Bank of Montreal (BMO)"            :   "./data/bmo_ar2022 (2).pdf",
-    "Versa Bank"                        :   "./data/Versa bank",
-    "National Bank of Canada (NBC)"     :   "./data/NATIONAL BANK OF CANADA_ 2022 Annual Report (1).pdf"
+all_documents = {
+    "BCAR"                              :   {"data":"./data/Basel Capital Adequacy Reporting (BCAR) 2023 (2).pdf","index":"Basel Capital Adequacy Reporting (BCAR) 2023 (2)_index"},
+    "Bank of Montreal (BMO)"            :   {"data":"./data/bmo_ar2022_removed.pdf","index":"bmo_ar2022 (2)_index"},
+    "Versa Bank (VB)"                   :   {"data":"./data/Versa bank","index":"VBAR_index"},
+    "Home Bancorp (HB)"                 :   {"data":"./data/Home Bancorp 2022 Annual Report.pdf"},
+    "National Bank of Canada (NBC)"     :   {"data":"./data/NATIONAL BANK OF CANADA_ 2022 Annual Report (1).pdf","index":"NATIONAL BANK OF CANADA_ 2022 Annual Report (1)_index"},
     }
 
-def load_doc(path):
-    if path.endswith(".pdf"):
-        doc = PyPDFLoader(file_path=path)
-    else:
-        doc = DirectoryLoader(path=path,glob="**/*.pdf")
-    document = doc.load()
-    context = "\n\n".join([document[i].page_content for i in range(len(document))])
-    return context
+institutes = all_documents.copy()
+del institutes["BCAR"]
 
-bank_txt = load_doc(institute_data_paths[institute])[:300000]
-bcar_txt = load_doc("./data/Basel Capital Adequacy Reporting (BCAR) 2023 (2).pdf")[:300000]
+with st.sidebar:
+    l,r = st.columns([1,1.])
+    l.markdown("# OSFI Chatbot")
+    r.image(Image.open('osfi_logo.png'),width=40)
+    institute = st.selectbox(label="Institute",options=institutes,label_visibility="hidden")
 
-docs = {
-    f"{institute} Annual Report"                :   bank_txt,
-    "Basel Capital Adequacy Reporting (BCAR)"   :   bcar_txt,
-    }
+def analyse():
+    with st.sidebar:
+        with st.spinner("Loading documents..."):
+            session.analyze_disabled = True
+            session.institute = institute
+            session.docs = {
+            f"{session.institute} Annual Report"        :   utils.load_doc(all_documents[session.institute]["data"]),
+            "Basel Capital Adequacy Reporting (BCAR)"   :   utils.load_doc(all_documents["BCAR"]["data"]),
+            }                            
+            session.input_disabled = False
+            session.transcript.append(["assistant","How can I help you today?"])
 
-def compare_answer(question,docs):
-    
-    retrival_system_template = """You are a helpful assistant, You need to extract as much text as you can which is relater or relevant to the answer of the user question from the context provided.
-Do not try to answer the question, just extract the text relevant to the answer of the user question.
-Use the following context (delimited by <ctx></ctx>) for finding out the relevant text:
-
-<ctx>
-{context}
-</ctx>"""
-    
-    retrival_system_prompt = SystemMessagePromptTemplate.from_template(template=retrival_system_template)
-    messages = [retrival_system_prompt,HumanMessage(content=question)]
-    compare_chat_prompt = ChatPromptTemplate.from_messages(messages)
-    
-    summary = dict()
-    for doc_name,doc_txt in tqdm(docs.items()):
-        summary[doc_name] = llm(compare_chat_prompt.format_prompt(context=doc_txt).to_messages()).content
-
-    compare_context = "\n\n".join([f"Relevant points from {doc_name}:\n\n{doc_summary}" for doc_name,doc_summary in summary.items()])
-    
-    compare_system_template = """You are a helpful chatbot who has to answer question of a user from the institute {institute} which comes under the BCAR {institute_type} section.
-You will be given relevant points from various documents that will help you answer the user question.
-Below is a list of relevant points along with the name of the document from where thoes points are from.
-Consider all the documents provided to you and answer the question by choosing all the relevant points to the question.
-You might have to compare points from more than one document to answer the question.
-
-{context}"""
-
-    compare_system_prompt = SystemMessagePromptTemplate.from_template(template=compare_system_template)
-    messages = [compare_system_prompt,HumanMessage(content=question)]
-    compare_chat_prompt = ChatPromptTemplate.from_messages(messages)
-    response = llm(compare_chat_prompt.format_prompt(institute=institute,institute_type=institute_type,question=question,context=compare_context).to_messages()).content
-    return response
-
-question = f"Based on the fiscal year-end mentioned in {institute}'s Annual Report when should it submit BCAR?"
-
+with st.sidebar:
+    analyze_button = st.button("Load Documents",use_container_width=True,disabled=session.analyze_disabled,on_click=analyse)                           
+        
 user_input = st.chat_input("Query",disabled=session.input_disabled)
-
-
 
 if user_input:
     session.transcript.append(["user",user_input])
-
-    response = compare_answer(user_input,docs)
-    session.transcript.append(["assistant",response])
+    with st.spinner("Processing..."):
+        bot_output = utils.compare_answer(anthropic_llm,anthropic_llm,session,user_input,session.docs)
+    session.transcript.append(["assistant",bot_output])
 
 if len(session.transcript)>0:
-    with st.chat_message("assistant"):
-        st.write(session.transcript[0])
-        st.dataframe(session.transcript[1])
-    for message in session.transcript[2:]:
+    for message in session.transcript:
         st.chat_message(message[0]).write(message[1])
 
